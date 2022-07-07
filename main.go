@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/application-research/barge/core"
 	"io"
 	"io/ioutil"
 	"log"
@@ -64,7 +65,7 @@ func main() {
 		loginCmd,
 		plumbCmd,
 		collectionsCmd,
-		initCmd,
+		core.InitCmd,
 		bargeAddCmd,
 		bargeStatusCmd,
 		bargeSyncCmd,
@@ -182,7 +183,7 @@ var loginCmd = &cli.Command{
 
 		tok := cctx.Args().First()
 
-		ec := &EstClient{
+		ec := &core.EstClient{
 			Host: cctx.String("host"),
 			Tok:  tok,
 		}
@@ -229,7 +230,7 @@ var plumbCmd = &cli.Command{
 	},
 }
 
-func loadClient(cctx *cli.Context) (*EstClient, error) {
+func LoadClient(cctx *cli.Context) (*core.EstClient, error) {
 	tok, ok := viper.Get("estuary.token").(string)
 	if !ok || tok == "" {
 		return nil, fmt.Errorf("no token set in barge config")
@@ -245,7 +246,7 @@ func loadClient(cctx *cli.Context) (*EstClient, error) {
 		return nil, fmt.Errorf("no primaryShuttle set in barge config")
 	}
 
-	return &EstClient{
+	return &core.EstClient{
 		Host:       host,
 		Tok:        tok,
 		Shuttle:    shuttle,
@@ -266,7 +267,7 @@ var plumbPutFileCmd = &cli.Command{
 			return fmt.Errorf("must specify filename to upload")
 		}
 
-		c, err := loadClient(cctx)
+		c, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -291,7 +292,7 @@ var plumbPutDirCmd = &cli.Command{
 	Name: "put-dir",
 	Action: func(cctx *cli.Context) error {
 		ctx := cctx.Context
-		client, err := loadClient(cctx)
+		client, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -354,7 +355,7 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dir string) 
 	return dirnode, nil
 }
 
-func doAddPin(ctx context.Context, bstore blockstore.Blockstore, client *EstClient, root cid.Cid, fname string) error {
+func doAddPin(ctx context.Context, bstore blockstore.Blockstore, client *core.EstClient, root cid.Cid, fname string) error {
 	pc, err := setupBitswap(ctx, bstore)
 	if err != nil {
 		return err
@@ -431,7 +432,7 @@ var plumbPutCarCmd = &cli.Command{
 			return fmt.Errorf("must specify car file to upload")
 		}
 
-		c, err := loadClient(cctx)
+		c, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -455,7 +456,7 @@ var plumbPutCarCmd = &cli.Command{
 }
 
 func listCollections(cctx *cli.Context) error {
-	c, err := loadClient(cctx)
+	c, err := LoadClient(cctx)
 	if err != nil {
 		return err
 	}
@@ -493,7 +494,7 @@ var collectionsCreateCmd = &cli.Command{
 		},
 	},
 	Action: func(cctx *cli.Context) error {
-		c, err := loadClient(cctx)
+		c, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -515,7 +516,7 @@ var collectionsLsDirCmd = &cli.Command{
 	Name:  "ls",
 	Flags: []cli.Flag{},
 	Action: func(cctx *cli.Context) error {
-		c, err := loadClient(cctx)
+		c, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -640,7 +641,7 @@ var plumbSplitAddFileCmd = &cli.Command{
 	},
 	Action: func(cctx *cli.Context) error {
 		ctx := cctx.Context
-		client, err := loadClient(cctx)
+		client, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -889,7 +890,7 @@ var bargeAddCmd = &cli.Command{
 		},
 	},
 	Action: func(cctx *cli.Context) error {
-		r, err := openRepo(cctx)
+		r, err := core.OpenRepo(cctx)
 		if err != nil {
 			return err
 		}
@@ -957,13 +958,13 @@ var bargeAddCmd = &cli.Command{
 
 		type addJob struct {
 			Path  string
-			Found []File
+			Found []core.File
 			Stat  os.FileInfo
 		}
 
 		type updateJob struct {
 			Path  string
-			Found []File
+			Found []core.File
 			Stat  os.FileInfo
 			Cid   cid.Cid
 		}
@@ -991,7 +992,7 @@ var bargeAddCmd = &cli.Command{
 
 				incrTotal(st.Size())
 
-				var found []File
+				var found []core.File
 				if err := r.DB.Find(&found, "path = ?", p).Error; err != nil {
 					fmt.Println(err)
 					return
@@ -1081,12 +1082,12 @@ var bargeAddCmd = &cli.Command{
 			close(toupdate)
 		}()
 
-		var batchCreates []*File
+		var batchCreates []*core.File
 		for uj := range toupdate {
 			if len(uj.Found) > 0 {
 				existing := uj.Found[0]
 				if existing.Cid != uj.Cid.String() {
-					if err := r.DB.Model(File{}).Where("id = ?", existing.ID).UpdateColumns(map[string]interface{}{
+					if err := r.DB.Model(core.File{}).Where("id = ?", existing.ID).UpdateColumns(map[string]interface{}{
 						"cid":   uj.Cid.String(),
 						"mtime": uj.Stat.ModTime(),
 					}).Error; err != nil {
@@ -1107,7 +1108,7 @@ var bargeAddCmd = &cli.Command{
 				return err
 			}
 
-			batchCreates = append(batchCreates, &File{
+			batchCreates = append(batchCreates, &core.File{
 				Path:  rel,
 				Cid:   uj.Cid.String(),
 				Mtime: uj.Stat.ModTime(),
@@ -1160,7 +1161,7 @@ func expandDirectory(dir string) ([]string, error) {
 	return out, nil
 }
 
-func maybeChanged(f File) (bool, string, error) {
+func maybeChanged(f core.File) (bool, string, error) {
 	st, err := os.Stat(f.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -1179,26 +1180,26 @@ func maybeChanged(f File) (bool, string, error) {
 var bargeStatusCmd = &cli.Command{
 	Name: "status",
 	Action: func(cctx *cli.Context) error {
-		r, err := openRepo(cctx)
+		r, err := core.OpenRepo(cctx)
 		if err != nil {
 			return err
 		}
 
-		var allfiles []File
+		var allfiles []core.File
 		if err := r.DB.Order("path asc").Find(&allfiles).Error; err != nil {
 			return err
 		}
 
 		fmt.Println("Changes not yet staged:")
 
-		var unpinned []File
+		var unpinned []core.File
 		for _, f := range allfiles {
 			ch, reason, err := maybeChanged(f)
 			if err != nil {
 				return err
 			}
 
-			var pins []Pin
+			var pins []core.Pin
 			if err := r.DB.Find(&pins, "file = ?", f.ID).Error; err != nil {
 				return err
 			}
@@ -1254,12 +1255,12 @@ var bargeSyncCmd = &cli.Command{
 	},
 	Action: func(cctx *cli.Context) error {
 		ctx := cctx.Context
-		r, err := openRepo(cctx)
+		r, err := core.OpenRepo(cctx)
 		if err != nil {
 			return err
 		}
 
-		c, err := loadClient(cctx)
+		c, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -1277,7 +1278,7 @@ var bargeSyncCmd = &cli.Command{
 		*/
 
 		var filespins []fileWithPin
-		if err := r.DB.Model(File{}).Joins("left join pins on pins.file = files.id AND pins.cid = files.cid").Select("files.id as file_id, pins.id as pin_id, path, status, request_id, files.cid as cid").Scan(&filespins).Error; err != nil {
+		if err := r.DB.Model(core.File{}).Joins("left join pins on pins.file = files.id AND pins.cid = files.cid").Select("files.id as file_id, pins.id as pin_id, path, status, request_id, files.cid as cid").Scan(&filespins).Error; err != nil {
 			return err
 		}
 
@@ -1295,7 +1296,7 @@ var bargeSyncCmd = &cli.Command{
 
 		var pinComplete []fileWithPin
 		var needsNewPin []fileWithPin
-		var inProgress []*Pin
+		var inProgress []*core.Pin
 		var checkProgress []fileWithPin
 		for _, f := range filespins {
 			if f.PinID == 0 {
@@ -1339,17 +1340,17 @@ var bargeSyncCmd = &cli.Command{
 				switch st.Status {
 				case types.PinningStatusPinned:
 					pinComplete = append(pinComplete, fp)
-					if err := r.DB.Model(Pin{}).Where("id = ?", fp.PinID).UpdateColumn("status", st.Status).Error; err != nil {
+					if err := r.DB.Model(core.Pin{}).Where("id = ?", fp.PinID).UpdateColumn("status", st.Status).Error; err != nil {
 						return err
 					}
 				case types.PinningStatusFailed:
 					needsNewPin = append(needsNewPin, fp)
-					if err := r.DB.Delete(Pin{ID: fp.PinID}).Error; err != nil {
+					if err := r.DB.Delete(core.Pin{ID: fp.PinID}).Error; err != nil {
 						return err
 					}
 				default:
 					// pin is technically in progress? do nothing for now
-					inProgress = append(inProgress, &Pin{
+					inProgress = append(inProgress, &core.Pin{
 						ID:        fp.PinID,
 						File:      fp.FileID,
 						Status:    fp.Status,
@@ -1381,7 +1382,7 @@ var bargeSyncCmd = &cli.Command{
 					continue
 				}
 
-				if err := r.DB.Create(&Pin{
+				if err := r.DB.Create(&core.Pin{
 					File:      nnp.FileID,
 					Cid:       nnp.Cid,
 					RequestID: pin.RequestID,
@@ -1405,7 +1406,7 @@ var bargeSyncCmd = &cli.Command{
 		var dplk sync.Mutex
 		var donePins int
 		var wg sync.WaitGroup
-		newpins := make([]*Pin, len(needsNewPin))
+		newpins := make([]*core.Pin, len(needsNewPin))
 		errs := make([]error, len(needsNewPin))
 		sema := make(chan struct{}, 20)
 		var delegates []string
@@ -1443,7 +1444,7 @@ var bargeSyncCmd = &cli.Command{
 				fmt.Printf("creating new pins %d/%d", donePins, len(needsNewPin))
 				dplk.Unlock()
 
-				p := &Pin{
+				p := &core.Pin{
 					File:      f.FileID,
 					Cid:       fcid.String(),
 					RequestID: resp.RequestID,
@@ -1459,7 +1460,7 @@ var bargeSyncCmd = &cli.Command{
 			fmt.Fprintf(os.Stderr, "failed to connect to deletegates for new pin: %s\n", err)
 		}
 
-		var tocreate []*Pin
+		var tocreate []*core.Pin
 		for _, p := range newpins {
 			if p != nil {
 				tocreate = append(tocreate, p)
@@ -1529,13 +1530,13 @@ var bargeSyncCmd = &cli.Command{
 				case types.PinningStatusPinned:
 					newdone++
 					complete[req] = true
-					if err := r.DB.Model(Pin{}).Where("request_id = ?", req).UpdateColumn("status", types.PinningStatusPinned).Error; err != nil {
+					if err := r.DB.Model(core.Pin{}).Where("request_id = ?", req).UpdateColumn("status", types.PinningStatusPinned).Error; err != nil {
 						return err
 					}
 				case types.PinningStatusFailed:
 					newdone++
 					failed[req] = true
-					if err := r.DB.Model(Pin{}).Where("request_id = ?", req).Delete(Pin{}).Error; err != nil {
+					if err := r.DB.Model(core.Pin{}).Where("request_id = ?", req).Delete(core.Pin{}).Error; err != nil {
 						return err
 					}
 				default:
@@ -1567,13 +1568,13 @@ var bargeSyncCmd = &cli.Command{
 var bargeCheckCmd = &cli.Command{
 	Name: "check",
 	Action: func(cctx *cli.Context) error {
-		r, err := openRepo(cctx)
+		r, err := core.OpenRepo(cctx)
 		if err != nil {
 			return err
 		}
 
 		for _, path := range cctx.Args().Slice() {
-			var file File
+			var file core.File
 			if err := r.DB.First(&file, "path = ?", path).Error; err != nil {
 				return err
 			}
@@ -1596,7 +1597,7 @@ var bargeCheckCmd = &cli.Command{
 var bargeShareCmd = &cli.Command{
 	Name: "share",
 	Action: func(cctx *cli.Context) error {
-		r, err := openRepo(cctx)
+		r, err := core.OpenRepo(cctx)
 		if err != nil {
 			return err
 		}

@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"fmt"
@@ -93,7 +93,7 @@ func findRepo(cctx *cli.Context) (string, error) {
 	return "", fmt.Errorf("barge directory not found, have you run `barge init`?")
 }
 
-func openRepo(cctx *cli.Context) (*Repo, error) {
+func OpenRepo(cctx *cli.Context) (*Repo, error) {
 	dir, err := findRepo(cctx)
 	if err != nil {
 		return nil, err

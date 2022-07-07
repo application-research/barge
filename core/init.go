@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"crypto/rand"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var initCmd = &cli.Command{
+var InitCmd = &cli.Command{
 	Name:  "init",
 	Usage: "initialize a barge repo in the current directory",
 	Flags: []cli.Flag{
@@ -39,7 +39,7 @@ var initCmd = &cli.Command{
 			return nil
 		}
 
-		c, err := loadClient(cctx)
+		c, err := LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -79,7 +79,7 @@ var initCmd = &cli.Command{
 			return err
 		}
 
-		r, err := openRepo(cctx)
+		r, err := OpenRepo(cctx)
 		if err != nil {
 			return err
 		}

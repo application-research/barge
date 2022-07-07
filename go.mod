@@ -1,4 +1,4 @@
-module github.com/application-research/estuary-barge
+module github.com/application-research/barge
 
 go 1.18
 
