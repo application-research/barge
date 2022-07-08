@@ -2,19 +2,16 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/application-research/barge/core"
 	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
-	"text/tabwriter"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
@@ -56,25 +53,15 @@ import (
 	dagsplit "github.com/application-research/estuary/util/dagsplit"
 )
 
-type EstuaryConfig struct {
-	Token          string `json:"token"`
-	Host           string `json:"host"`
-	PrimaryShuttle string `json:"primaryShuttle"`
-}
-
-type Config struct {
-	Estuary EstuaryConfig `json:"estuary"`
-}
-
 func main() {
 	app := cli.NewApp()
 
 	app.Name = "barge"
 	app.Commands = []*cli.Command{
-		configCmd,
-		loginCmd,
-		plumbCmd,
-		collectionsCmd,
+		core.ConfigCmd,
+		core.LoginCmd,
+		core.PlumbCmd,
+		core.CollectionsCmd,
 		core.InitCmd,
 		bargeAddCmd,
 		bargeStatusCmd,
@@ -126,173 +113,11 @@ func loadConfig() error {
 	return nil
 }
 
-var configCmd = &cli.Command{
-	Name: "config",
-	Subcommands: []*cli.Command{
-		configSetCmd,
-		configShowCmd,
-	},
-}
-
-var configSetCmd = &cli.Command{
-	Name: "set",
-	Action: func(cctx *cli.Context) error {
-		if cctx.Args().Len() != 2 {
-			return fmt.Errorf("must pass two arguments: key and value")
-		}
-
-		viper.Set(cctx.Args().Get(0), cctx.Args().Get(1))
-
-		if err := viper.WriteConfig(); err != nil {
-			return fmt.Errorf("failed to write config file: %w", err)
-		}
-		return nil
-	},
-}
-
-var configShowCmd = &cli.Command{
-	Name: "show",
-	Action: func(cctx *cli.Context) error {
-		var m map[string]interface{}
-		if err := viper.Unmarshal(&m); err != nil {
-			return err
-		}
-
-		b, err := json.MarshalIndent(m, "  ", "")
-		if err != nil {
-			return err
-		}
-
-		fmt.Println(string(b))
-		return nil
-	},
-}
-
-var loginCmd = &cli.Command{
-	Name: "login",
-	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:  "host",
-			Value: "https://api.estuary.tech",
-		},
-	},
-	Action: func(cctx *cli.Context) error {
-		if !cctx.Args().Present() {
-			return fmt.Errorf("must specify api token")
-		}
-
-		tok := cctx.Args().First()
-
-		ec := &core.EstClient{
-			Host: cctx.String("host"),
-			Tok:  tok,
-		}
-
-		vresp, err := ec.Viewer(cctx.Context)
-		if err != nil {
-			return err
-		}
-
-		fmt.Println("logging in as user: ", vresp.Username)
-
-		if len(vresp.Settings.UploadEndpoints) > 0 {
-			sh := vresp.Settings.UploadEndpoints[0]
-			u, err := url.Parse(sh)
-			if err != nil {
-				return err
-			}
-
-			u.Path = ""
-			u.RawQuery = ""
-			u.Fragment = ""
-
-			fmt.Printf("selecting %s as our primary shuttle\n", u.String())
-
-			viper.Set("estuary.primaryShuttle", u.String())
-		}
-
-		viper.Set("estuary.token", tok)
-		viper.Set("estuary.host", ec.Host)
-
-		return viper.WriteConfig()
-	},
-}
-
-var plumbCmd = &cli.Command{
-	Name:   "plumb",
-	Hidden: true,
-	Usage:  "low level plumbing commands",
-	Subcommands: []*cli.Command{
-		plumbPutFileCmd,
-		plumbPutCarCmd,
-		plumbSplitAddFileCmd,
-		plumbPutDirCmd,
-	},
-}
-
-func LoadClient(cctx *cli.Context) (*core.EstClient, error) {
-	tok, ok := viper.Get("estuary.token").(string)
-	if !ok || tok == "" {
-		return nil, fmt.Errorf("no token set in barge config")
-	}
-
-	host, ok := viper.Get("estuary.host").(string)
-	if !ok || host == "" {
-		return nil, fmt.Errorf("no host set in barge config")
-	}
-
-	shuttle, ok := viper.Get("estuary.primaryShuttle").(string)
-	if !ok || shuttle == "" {
-		return nil, fmt.Errorf("no primaryShuttle set in barge config")
-	}
-
-	return &core.EstClient{
-		Host:       host,
-		Tok:        tok,
-		Shuttle:    shuttle,
-		LogTimings: cctx.Bool("debug"),
-	}, nil
-}
-
-var plumbPutFileCmd = &cli.Command{
-	Name: "put-file",
-	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:  "name",
-			Usage: "specify alternate name for file to be added with",
-		},
-	},
-	Action: func(cctx *cli.Context) error {
-		if !cctx.Args().Present() {
-			return fmt.Errorf("must specify filename to upload")
-		}
-
-		c, err := LoadClient(cctx)
-		if err != nil {
-			return err
-		}
-
-		f := cctx.Args().First()
-		fname := filepath.Base(f)
-		if oname := cctx.String("name"); oname != "" {
-			fname = oname
-		}
-
-		resp, err := c.AddFile(f, fname)
-		if err != nil {
-			return err
-		}
-
-		fmt.Println(resp.Cid)
-		return nil
-	},
-}
-
 var plumbPutDirCmd = &cli.Command{
 	Name: "put-dir",
 	Action: func(cctx *cli.Context) error {
 		ctx := cctx.Context
-		client, err := LoadClient(cctx)
+		client, err := core.LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -334,6 +159,7 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dir string) 
 			if err := dirnode.AddNodeLink(d.Name(), dirn); err != nil {
 				return nil, err
 			}
+			fmt.Printf("imported directory: %s | %s \n", d.Name(), dirn.Cid())
 		} else {
 			fcid, size, err := filestoreAdd(fstore, name, progCb)
 			if err != nil {
@@ -429,7 +255,7 @@ var plumbPutCarCmd = &cli.Command{
 			return fmt.Errorf("must specify car file to upload")
 		}
 
-		c, err := LoadClient(cctx)
+		c, err := core.LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -448,96 +274,6 @@ var plumbPutCarCmd = &cli.Command{
 		}
 
 		fmt.Println(resp.Cid)
-		return nil
-	},
-}
-
-func listCollections(cctx *cli.Context) error {
-	c, err := LoadClient(cctx)
-	if err != nil {
-		return err
-	}
-
-	cols, err := c.CollectionsList(cctx.Context)
-	if err != nil {
-		return err
-	}
-
-	w := tabwriter.NewWriter(os.Stdout, 4, 4, 2, ' ', 0)
-	for _, c := range cols {
-		fmt.Fprintf(w, "%s\t%s\t%s\n", c.Name, c.UUID, c.CreatedAt)
-	}
-	return w.Flush()
-}
-
-var collectionsCmd = &cli.Command{
-	Name: "collections",
-	Subcommands: []*cli.Command{
-		collectionsCreateCmd,
-		collectionsLsDirCmd,
-	},
-	Action: listCollections,
-}
-
-var collectionsCreateCmd = &cli.Command{
-	Name: "create",
-	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:     "name",
-			Required: true,
-		},
-		&cli.StringFlag{
-			Name: "description",
-		},
-	},
-	Action: func(cctx *cli.Context) error {
-		c, err := LoadClient(cctx)
-		if err != nil {
-			return err
-		}
-
-		col, err := c.CollectionsCreate(cctx.Context, cctx.String("name"), cctx.String("description"))
-		if err != nil {
-			return err
-		}
-
-		fmt.Println("new collection created")
-		fmt.Println(col.Name)
-		fmt.Println(col.UUID)
-
-		return nil
-	},
-}
-
-var collectionsLsDirCmd = &cli.Command{
-	Name:  "ls",
-	Flags: []cli.Flag{},
-	Action: func(cctx *cli.Context) error {
-		c, err := LoadClient(cctx)
-		if err != nil {
-			return err
-		}
-
-		if cctx.Args().Len() < 2 {
-			return fmt.Errorf("must specify collection ID and path to list")
-		}
-
-		col := cctx.Args().Get(0)
-		path := cctx.Args().Get(1)
-
-		ents, err := c.CollectionsListDir(cctx.Context, col, path)
-		if err != nil {
-			return err
-		}
-
-		for _, e := range ents {
-			if e.Dir {
-				fmt.Println(e.Name + "/")
-			} else {
-				fmt.Println(e.Name)
-			}
-		}
-
 		return nil
 	},
 }
@@ -638,7 +374,7 @@ var plumbSplitAddFileCmd = &cli.Command{
 	},
 	Action: func(cctx *cli.Context) error {
 		ctx := cctx.Context
-		client, err := LoadClient(cctx)
+		client, err := core.LoadClient(cctx)
 		if err != nil {
 			return err
 		}
@@ -1257,7 +993,7 @@ var bargeSyncCmd = &cli.Command{
 			return err
 		}
 
-		c, err := LoadClient(cctx)
+		c, err := core.LoadClient(cctx)
 		if err != nil {
 			return err
 		}

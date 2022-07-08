@@ -26,18 +26,34 @@ import (
 	cli "github.com/urfave/cli/v2"
 )
 
-type EstClient struct {
-	Host       string
-	Shuttle    string
-	Tok        string
-	DoProgress bool
-	LogTimings bool
-}
-
 type httpStatusError struct {
 	Status     string
 	StatusCode int
 	Extra      string
+}
+
+func LoadClient(cctx *cli.Context) (*EstClient, error) {
+	tok, ok := viper.Get("estuary.token").(string)
+	if !ok || tok == "" {
+		return nil, fmt.Errorf("no token set in barge config")
+	}
+
+	host, ok := viper.Get("estuary.host").(string)
+	if !ok || host == "" {
+		return nil, fmt.Errorf("no host set in barge config")
+	}
+
+	shuttle, ok := viper.Get("estuary.primaryShuttle").(string)
+	if !ok || shuttle == "" {
+		return nil, fmt.Errorf("no primaryShuttle set in barge config")
+	}
+
+	return &EstClient{
+		Host:       host,
+		Tok:        tok,
+		Shuttle:    shuttle,
+		LogTimings: cctx.Bool("debug"),
+	}, nil
 }
 
 func (hse httpStatusError) Error() string {
@@ -132,30 +148,6 @@ func (c *EstClient) Viewer(ctx context.Context) (*util.ViewerResponse, error) {
 	}
 
 	return &vresp, nil
-}
-
-func LoadClient(cctx *cli.Context) (*EstClient, error) {
-	tok, ok := viper.Get("estuary.token").(string)
-	if !ok || tok == "" {
-		return nil, fmt.Errorf("no token set in barge config")
-	}
-
-	host, ok := viper.Get("estuary.host").(string)
-	if !ok || host == "" {
-		return nil, fmt.Errorf("no host set in barge config")
-	}
-
-	shuttle, ok := viper.Get("estuary.primaryShuttle").(string)
-	if !ok || shuttle == "" {
-		return nil, fmt.Errorf("no primaryShuttle set in barge config")
-	}
-
-	return &EstClient{
-		Host:       host,
-		Tok:        tok,
-		Shuttle:    shuttle,
-		LogTimings: cctx.Bool("debug"),
-	}, nil
 }
 
 func (c *EstClient) AddCar(fpath, name string) (*util.ContentAddResponse, error) {
