@@ -1,6 +1,8 @@
 # Estuary Barge
 Barge is a CLI tool that directly uses estuary api to stream/upload files to the filecoin network.
 
+*This project is based on the a sub module on Estuary under /cmd/barge.* 
+
 ## Installation
 ### Pre-requisites
 - Go
