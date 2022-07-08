@@ -9,7 +9,7 @@ import (
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-filestore"
 	"github.com/labstack/gommon/log"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/rand"
 	"io/ioutil"
 	"os"
@@ -21,14 +21,14 @@ import (
 
 var BargeAddCmd = &cli.Command{
 	Name:        "add",
-	Description: "",
+	Description: `'barge add <file>' is a command to add a file'`,
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name: "progress",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
-		r, err := OpenRepo(cctx)
+		r, err := OpenRepo()
 		if err != nil {
 			return err
 		}
@@ -271,9 +271,10 @@ var BargeAddCmd = &cli.Command{
 }
 
 var BargeStatusCmd = &cli.Command{
-	Name: "status",
+	Name:        "status",
+	Description: `'barge status' is a command to check the status of the file'`,
 	Action: func(cctx *cli.Context) error {
-		r, err := OpenRepo(cctx)
+		r, err := OpenRepo()
 		if err != nil {
 			return err
 		}
@@ -327,7 +328,8 @@ var BargeStatusCmd = &cli.Command{
 }
 
 var BargeSyncCmd = &cli.Command{
-	Name: "sync",
+	Name:        "sync",
+	Description: `'barge sync' is a command to synchronize the state of the objects in this barge instance'`,
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name: "recover",
@@ -338,7 +340,7 @@ var BargeSyncCmd = &cli.Command{
 	},
 	Action: func(cctx *cli.Context) error {
 		ctx := cctx.Context
-		r, err := OpenRepo(cctx)
+		r, err := OpenRepo()
 		if err != nil {
 			return err
 		}
@@ -540,7 +542,10 @@ var BargeSyncCmd = &cli.Command{
 		wg.Wait()
 
 		if err := connectToDelegates(ctx, h, delegates); err != nil {
-			fmt.Fprintf(os.Stderr, "failed to connect to deletegates for new pin: %s\n", err)
+			_, err := fmt.Fprintf(os.Stderr, "failed to connect to deletegates for new pin: %s\n", err)
+			if err != nil {
+				return err
+			}
 		}
 
 		var tocreate []*Pin
@@ -649,9 +654,10 @@ var BargeSyncCmd = &cli.Command{
 }
 
 var BargeCheckCmd = &cli.Command{
-	Name: "check",
+	Name:        "check",
+	Description: `'barge check' to check the state of the object'`,
 	Action: func(cctx *cli.Context) error {
-		r, err := OpenRepo(cctx)
+		r, err := OpenRepo()
 		if err != nil {
 			return err
 		}
@@ -678,9 +684,10 @@ var BargeCheckCmd = &cli.Command{
 }
 
 var BargeShareCmd = &cli.Command{
-	Name: "share",
+	Name:        "share",
+	Description: `'barge check' to share objects'`,
 	Action: func(cctx *cli.Context) error {
-		r, err := OpenRepo(cctx)
+		r, err := OpenRepo()
 		if err != nil {
 			return err
 		}
@@ -698,7 +705,7 @@ var BargeShareCmd = &cli.Command{
 
 		select {}
 
-		return nil
+		//return nil
 	},
 }
 

@@ -20,10 +20,10 @@ import (
 	"time"
 
 	"github.com/application-research/estuary/pinner/types"
-	util "github.com/application-research/estuary/util"
+	"github.com/application-research/estuary/util"
 	"github.com/cheggaaa/pb/v3"
 	"github.com/ipfs/go-cid"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 )
 
 type httpStatusError struct {
@@ -60,7 +60,7 @@ func (hse httpStatusError) Error() string {
 	return fmt.Sprintf("received non-200 status: %s (%s)", hse.Status, hse.Extra)
 }
 
-func (c *EstClient) doRequest(ctx context.Context, method string, path string, body interface{}, resp interface{}) (int, error) {
+func (c *EstClient) doRequest(method string, path string, body interface{}, resp interface{}) (int, error) {
 	start := time.Now()
 	defer func() {
 		if c.LogTimings {
@@ -92,7 +92,12 @@ func (c *EstClient) doRequest(ctx context.Context, method string, path string, b
 		return 0, err
 	}
 
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(r.Body)
 
 	if !(r.StatusCode >= 200 && r.StatusCode < 300) {
 		var out map[string]interface{}
@@ -140,9 +145,9 @@ func (c *EstClient) doRequest(ctx context.Context, method string, path string, b
 	return r.StatusCode, nil
 }
 
-func (c *EstClient) Viewer(ctx context.Context) (*util.ViewerResponse, error) {
+func (c *EstClient) Viewer(context.Context) (*util.ViewerResponse, error) {
 	var vresp util.ViewerResponse
-	_, err := c.doRequest(ctx, "GET", "/viewer", nil, &vresp)
+	_, err := c.doRequest("GET", "/viewer", nil, &vresp)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +155,7 @@ func (c *EstClient) Viewer(ctx context.Context) (*util.ViewerResponse, error) {
 	return &vresp, nil
 }
 
-func (c *EstClient) AddCar(fpath, name string) (*util.ContentAddResponse, error) {
+func (c *EstClient) AddCar(fpath, _ string) (*util.ContentAddResponse, error) {
 	fi, err := os.Open(fpath)
 	if err != nil {
 		return nil, err
@@ -166,7 +171,12 @@ func (c *EstClient) AddCar(fpath, name string) (*util.ContentAddResponse, error)
 		rc = pb.Start64(finfo.Size()).NewProxyReader(fi)
 	}
 
-	defer rc.Close()
+	defer func(rc io.ReadCloser) {
+		err := rc.Close()
+		if err != nil {
+
+		}
+	}(rc)
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/content/add-car", c.Shuttle), rc)
 	if err != nil {
@@ -220,9 +230,15 @@ func (c *EstClient) AddFile(fpath, filename string) (*util.ContentAddResponse, e
 		var outerr error
 		defer func() {
 			if outerr != nil {
-				w.CloseWithError(outerr)
+				err := w.CloseWithError(outerr)
+				if err != nil {
+					return
+				}
 			} else {
-				w.Close()
+				err := w.Close()
+				if err != nil {
+					return
+				}
 			}
 		}()
 
@@ -237,7 +253,10 @@ func (c *EstClient) AddFile(fpath, filename string) (*util.ContentAddResponse, e
 			outerr = err
 			return
 		}
-		mw.Close()
+		err = mw.Close()
+		if err != nil {
+			return
+		}
 	}()
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/content/add", c.Shuttle), r)
@@ -269,9 +288,9 @@ func (c *EstClient) AddFile(fpath, filename string) (*util.ContentAddResponse, e
 	return &rbody, nil
 }
 
-func (c *EstClient) CollectionsList(ctx context.Context) ([]*dbmgr.Collection, error) {
+func (c *EstClient) CollectionsList(context.Context) ([]*dbmgr.Collection, error) {
 	var out []*dbmgr.Collection
-	_, err := c.doRequest(ctx, "GET", "/collections/list", nil, &out)
+	_, err := c.doRequest("GET", "/collections/list", nil, &out)
 	if err != nil {
 		return nil, err
 	}
@@ -279,14 +298,14 @@ func (c *EstClient) CollectionsList(ctx context.Context) ([]*dbmgr.Collection, e
 	return out, nil
 }
 
-func (c *EstClient) CollectionsCreate(ctx context.Context, name, desc string) (*dbmgr.Collection, error) {
+func (c *EstClient) CollectionsCreate(_ context.Context, name, desc string) (*dbmgr.Collection, error) {
 	body := map[string]string{
 		"name":        name,
 		"description": desc,
 	}
 
 	var out dbmgr.Collection
-	_, err := c.doRequest(ctx, "POST", "/collections/create", body, &out)
+	_, err := c.doRequest("POST", "/collections/create", body, &out)
 	if err != nil {
 		return nil, err
 	}
@@ -301,9 +320,9 @@ type collectionListResponse struct {
 	ContID uint   `json:"contId"`
 }
 
-func (c *EstClient) CollectionsListDir(ctx context.Context, coluuid, path string) ([]collectionListResponse, error) {
+func (c *EstClient) CollectionsListDir(_ context.Context, coluuid, path string) ([]collectionListResponse, error) {
 	var out []collectionListResponse
-	_, err := c.doRequest(ctx, "GET", fmt.Sprintf("/collections/content?coluuid=%s&colpath=%s", coluuid, url.PathEscape(path)), nil, &out)
+	_, err := c.doRequest("GET", fmt.Sprintf("/collections/content?coluuid=%s&colpath=%s", coluuid, url.PathEscape(path)), nil, &out)
 	if err != nil {
 		return nil, err
 	}
@@ -315,7 +334,7 @@ func (c *EstClient) CollectionsListDir(ctx context.Context, coluuid, path string
 	return out, nil
 }
 
-func (c *EstClient) PinAdd(ctx context.Context, root cid.Cid, name string, origins []string, meta map[string]interface{}) (*types.IpfsPinStatusResponse, error) {
+func (c *EstClient) PinAdd(_ context.Context, root cid.Cid, name string, origins []string, meta map[string]interface{}) (*types.IpfsPinStatusResponse, error) {
 	p := &types.IpfsPin{
 		CID:     root.String(),
 		Name:    name,
@@ -324,7 +343,7 @@ func (c *EstClient) PinAdd(ctx context.Context, root cid.Cid, name string, origi
 	}
 
 	var resp types.IpfsPinStatusResponse
-	_, err := c.doRequest(ctx, "POST", "/pinning/pins", p, &resp)
+	_, err := c.doRequest("POST", "/pinning/pins", p, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -334,9 +353,9 @@ func (c *EstClient) PinAdd(ctx context.Context, root cid.Cid, name string, origi
 	return &resp, nil
 }
 
-func (c *EstClient) PinStatus(ctx context.Context, reqid string) (*types.IpfsPinStatusResponse, error) {
+func (c *EstClient) PinStatus(_ context.Context, reqid string) (*types.IpfsPinStatusResponse, error) {
 	var resp types.IpfsPinStatusResponse
-	_, err := c.doRequest(ctx, "GET", "/pinning/pins/"+reqid, nil, &resp)
+	_, err := c.doRequest("GET", "/pinning/pins/"+reqid, nil, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -352,7 +371,7 @@ type listPinsResp struct {
 func shouldRetry(err error) bool {
 	switch err := err.(type) {
 	case net.Error:
-		return err.Temporary() || err.Timeout()
+		return err.Timeout()
 	case *httpStatusError:
 		return err.StatusCode == 502
 	case syscall.Errno:
@@ -369,9 +388,9 @@ func shouldRetry(err error) bool {
 	return false
 }
 
-func (c *EstClient) doRequestRetries(ctx context.Context, method, path string, body, resp interface{}, retries int) (int, error) {
+func (c *EstClient) doRequestRetries(method, path string, body, resp interface{}, retries int) (int, error) {
 	for i := 0; ; i++ {
-		st, err := c.doRequest(ctx, method, path, body, resp)
+		st, err := c.doRequest(method, path, body, resp)
 		if err == nil {
 			return st, nil
 		}
@@ -388,9 +407,9 @@ func (c *EstClient) doRequestRetries(ctx context.Context, method, path string, b
 	}
 }
 
-func (c *EstClient) PinStatuses(ctx context.Context, reqids []string) (map[string]*types.IpfsPinStatusResponse, error) {
+func (c *EstClient) PinStatuses(_ context.Context, reqids []string) (map[string]*types.IpfsPinStatusResponse, error) {
 	var resp listPinsResp
-	_, err := c.doRequestRetries(ctx, "GET", "/pinning/pins?requestid="+strings.Join(reqids, ","), nil, &resp, 5)
+	_, err := c.doRequestRetries("GET", "/pinning/pins?requestid="+strings.Join(reqids, ","), nil, &resp, 5)
 	if err != nil {
 		return nil, err
 	}
@@ -403,9 +422,9 @@ func (c *EstClient) PinStatuses(ctx context.Context, reqids []string) (map[strin
 	return out, nil
 }
 
-func (c *EstClient) PinStatusByCid(ctx context.Context, cids []string) (map[string]*types.IpfsPinStatusResponse, error) {
+func (c *EstClient) PinStatusByCid(_ context.Context, cids []string) (map[string]*types.IpfsPinStatusResponse, error) {
 	var resp listPinsResp
-	_, err := c.doRequest(ctx, "GET", "/pinning/pins?cid="+strings.Join(cids, ","), nil, &resp)
+	_, err := c.doRequest("GET", "/pinning/pins?cid="+strings.Join(cids, ","), nil, &resp)
 	if err != nil {
 		return nil, err
 	}

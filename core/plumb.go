@@ -12,7 +12,7 @@ import (
 	ihelper "github.com/ipfs/go-unixfs/importer/helpers"
 	"github.com/libp2p/go-libp2p"
 	connmgr "github.com/libp2p/go-libp2p-connmgr"
-	metrics "github.com/libp2p/go-libp2p-core/metrics"
+	"github.com/libp2p/go-libp2p-core/metrics"
 	rhelp "github.com/libp2p/go-libp2p-routing-helpers"
 	mh "github.com/multiformats/go-multihash"
 	"io"
@@ -38,7 +38,7 @@ import (
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/multiformats/go-multiaddr"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
 	"github.com/application-research/estuary/pinner/types"
@@ -338,10 +338,10 @@ func setupBitswap(ctx context.Context, bstore blockstore.Blockstore) (*PinClient
 		return nil, err
 	}
 
-	bsnet := bsnet.NewFromIpfsHost(h, rhelp.Null{})
+	bsNetFromIpfsHost := bsnet.NewFromIpfsHost(h, rhelp.Null{})
 	bsctx := metri.CtxScope(ctx, "barge.exch")
 
-	bswap := bitswap.New(bsctx, bsnet, bstore,
+	bswap := bitswap.New(bsctx, bsNetFromIpfsHost, bstore,
 		bitswap.EngineBlockstoreWorkerCount(600),
 		bitswap.TaskWorkerCount(600),
 		bitswap.MaxOutstandingBytesPerPeer(10<<20),
@@ -477,7 +477,12 @@ func filestoreAdd(fstore *filestore.Filestore, fpath string, progcb func(int64))
 	if err != nil {
 		return cid.Undef, 0, err
 	}
-	defer ff.Close()
+	defer func(ff *FilestoreFile) {
+		err := ff.Close()
+		if err != nil {
+
+		}
+	}(ff)
 
 	dserv := merkledag.NewDAGService(blockservice.New(fstore, nil))
 	nd, err := importFile(dserv, ff)

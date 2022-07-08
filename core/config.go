@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 )
 
 var ConfigCmd = &cli.Command{

@@ -29,12 +29,23 @@ holds the estuary connection information.
 ./barge init 
 ```
 
-### Configuration file
+### Local configuration file
 ```
 {
   "estuary": {
     "host": "http://localhost:3004",
     "primaryshuttle": "http://localhost:3005",
+    "token": "<local API token>"
+  }
+}
+```
+
+### Remote Estuary configuration
+```
+{
+  "estuary": {
+    "host": "https://api.estuary.tech",
+    "primaryshuttle": "https://shuttle-4.estuary.tech",
     "token": "<local API token>"
   }
 }

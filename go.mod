@@ -357,5 +357,4 @@ require (
 )
 
 replace github.com/raulk/go-bs-tests => github.com/whyrusleeping/go-bs-tests v0.1.0
-
 replace github.com/filecoin-project/filecoin-ffi => ./extern/filecoin-ffi

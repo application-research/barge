@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 	"os"
 	"text/tabwriter"
 )
@@ -92,7 +92,10 @@ func listCollections(cctx *cli.Context) error {
 
 	w := tabwriter.NewWriter(os.Stdout, 4, 4, 2, ' ', 0)
 	for _, c := range cols {
-		fmt.Fprintf(w, "%s\t%s\t%s\n", c.Name, c.UUID, c.CreatedAt)
+		_, err := fmt.Fprintf(w, "%s\t%s\t%s\n", c.Name, c.UUID, c.CreatedAt)
+		if err != nil {
+			return err
+		}
 	}
 	return w.Flush()
 }

@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"github.com/spf13/viper"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 	"os"
 	"path/filepath"
 )
@@ -79,7 +79,7 @@ var InitCmd = &cli.Command{
 			return err
 		}
 
-		r, err := OpenRepo(cctx)
+		r, err := OpenRepo()
 		if err != nil {
 			return err
 		}
@@ -94,7 +94,10 @@ var InitCmd = &cli.Command{
 
 		if colname == "" {
 			buf := make([]byte, 3)
-			rand.Read(buf)
+			_, err := rand.Read(buf)
+			if err != nil {
+				return err
+			}
 
 			colname = fmt.Sprintf("%s-%x", filepath.Base(wd), buf)
 		}

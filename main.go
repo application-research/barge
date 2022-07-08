@@ -5,7 +5,7 @@ import (
 	"github.com/application-research/barge/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 	"os"
 	"path/filepath"
 )

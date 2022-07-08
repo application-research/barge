@@ -4,7 +4,7 @@ import (
 	"github.com/application-research/estuary/pinner/types"
 	"github.com/ipfs/go-bitswap"
 	"github.com/libp2p/go-libp2p-core/host"
-	metrics "github.com/libp2p/go-libp2p-core/metrics"
+	"github.com/libp2p/go-libp2p-core/metrics"
 	"time"
 )
 

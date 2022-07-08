@@ -1,0 +1,12 @@
+{
+  "name": "barge-webui",
+  "version": "0.0.1",
+  "description": "barge web user interface",
+  "main": "index.js",
+  "scripts": {
+    "run-dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ARG",
+  "license": "ISC"
+}

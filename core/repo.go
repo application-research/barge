@@ -8,7 +8,6 @@ import (
 	blockstore "github.com/ipfs/go-ipfs-blockstore"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
-	cli "github.com/urfave/cli/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
@@ -27,13 +26,16 @@ type Repo struct {
 func (r *Repo) Close() error {
 
 	if err := r.leveldb.Close(); err != nil {
-		fmt.Fprintln(os.Stderr, "failed to close leveldb: ", err)
+		_, err := fmt.Fprintln(os.Stderr, "failed to close leveldb: ", err)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func findRepo(cctx *cli.Context) (string, error) {
+func findRepo() (string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return "", err
@@ -48,7 +50,7 @@ func findRepo(cctx *cli.Context) (string, error) {
 
 	for wd != "/" {
 		if wd == home {
-			return "", fmt.Errorf("barge directory not found, have you run `barge init`?")
+			return "", fmt.Errorf("barge directory not found, make sure to run `barge init` first")
 		}
 
 		dir := filepath.Join(wd, ".barge")
@@ -69,11 +71,11 @@ func findRepo(cctx *cli.Context) (string, error) {
 		return dir, nil
 	}
 
-	return "", fmt.Errorf("barge directory not found, have you run `barge init`?")
+	return "", fmt.Errorf("barge directory not found, make sure to run `barge init` first")
 }
 
-func OpenRepo(cctx *cli.Context) (*Repo, error) {
-	dir, err := findRepo(cctx)
+func OpenRepo() (*Repo, error) {
+	dir, err := findRepo()
 	if err != nil {
 		return nil, err
 	}
@@ -107,8 +109,14 @@ func OpenRepo(cctx *cli.Context) (*Repo, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&File{})
-	db.AutoMigrate(&Pin{})
+	errOnMigrateFile := db.AutoMigrate(&File{})
+	if errOnMigrateFile != nil {
+		return nil, errOnMigrateFile
+	}
+	errOnMigratePin := db.AutoMigrate(&Pin{})
+	if errOnMigratePin != nil {
+		return nil, errOnMigratePin
+	}
 
 	lds, err := leveldb.NewDatastore(filepath.Join(dbdir, "leveldb"), &leveldb.Options{
 		NoSync: true,
