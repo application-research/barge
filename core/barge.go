@@ -270,51 +270,6 @@ var BargeAddCmd = &cli.Command{
 	},
 }
 
-func expandDirectory(dir string) ([]string, error) {
-	dirents, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
-
-	var out []string
-	for _, ent := range dirents {
-		if strings.HasPrefix(ent.Name(), ".") {
-			continue
-		}
-
-		if ent.IsDir() {
-			sub, err := expandDirectory(filepath.Join(dir, ent.Name()))
-			if err != nil {
-				return nil, err
-			}
-
-			for _, s := range sub {
-				out = append(out, s)
-			}
-		} else {
-			out = append(out, filepath.Join(dir, ent.Name()))
-		}
-	}
-
-	return out, nil
-}
-
-func maybeChanged(f File) (bool, string, error) {
-	st, err := os.Stat(f.Path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return true, "deleted", nil
-		}
-		return false, "", err
-	}
-
-	if f.Mtime.Equal(st.ModTime()) {
-		return false, "", nil
-	}
-
-	return true, "modified", nil
-}
-
 var BargeStatusCmd = &cli.Command{
 	Name: "status",
 	Action: func(cctx *cli.Context) error {
@@ -745,4 +700,49 @@ var BargeShareCmd = &cli.Command{
 
 		return nil
 	},
+}
+
+func maybeChanged(f File) (bool, string, error) {
+	st, err := os.Stat(f.Path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return true, "deleted", nil
+		}
+		return false, "", err
+	}
+
+	if f.Mtime.Equal(st.ModTime()) {
+		return false, "", nil
+	}
+
+	return true, "modified", nil
+}
+
+func expandDirectory(dir string) ([]string, error) {
+	dirents, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	var out []string
+	for _, ent := range dirents {
+		if strings.HasPrefix(ent.Name(), ".") {
+			continue
+		}
+
+		if ent.IsDir() {
+			sub, err := expandDirectory(filepath.Join(dir, ent.Name()))
+			if err != nil {
+				return nil, err
+			}
+
+			for _, s := range sub {
+				out = append(out, s)
+			}
+		} else {
+			out = append(out, filepath.Join(dir, ent.Name()))
+		}
+	}
+
+	return out, nil
 }

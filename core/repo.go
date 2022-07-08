@@ -21,8 +21,7 @@ type Repo struct {
 	Dir       string
 
 	leveldb *leveldb.Datastore
-
-	Cfg *viper.Viper
+	Cfg     *viper.Viper
 }
 
 func (r *Repo) Close() error {
