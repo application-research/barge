@@ -56,6 +56,16 @@ import (
 	dagsplit "github.com/application-research/estuary/util/dagsplit"
 )
 
+type EstuaryConfig struct {
+	Token          string `json:"token"`
+	Host           string `json:"host"`
+	PrimaryShuttle string `json:"primaryShuttle"`
+}
+
+type Config struct {
+	Estuary EstuaryConfig `json:"estuary"`
+}
+
 func main() {
 	app := cli.NewApp()
 
@@ -89,16 +99,6 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-}
-
-type EstuaryConfig struct {
-	Token          string `json:"token"`
-	Host           string `json:"host"`
-	PrimaryShuttle string `json:"primaryShuttle"`
-}
-
-type Config struct {
-	Estuary EstuaryConfig `json:"estuary"`
 }
 
 func loadConfig() error {
@@ -299,21 +299,19 @@ var plumbPutDirCmd = &cli.Command{
 
 		ds := dsync.MutexWrap(datastore.NewMapDatastore())
 		fsm := filestore.NewFileManager(ds, "/")
-
 		bs := blockstore.NewBlockstore(ds)
 
 		fsm.AllowFiles = true
 		fstore := filestore.NewFilestore(bs, fsm)
 
 		fname := cctx.Args().First()
-
 		dnd, err := addDirectory(ctx, fstore, fname)
+
 		if err != nil {
 			return err
 		}
 
 		fmt.Println("imported directory: ", dnd.Cid())
-
 		return doAddPin(ctx, fstore, client, dnd.Cid(), fname)
 	},
 }
@@ -325,7 +323,6 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dir string) 
 	}
 
 	progCb := func(int64) {}
-
 	dirnode := unixfs.EmptyDirNode()
 	for _, d := range dirents {
 		name := filepath.Join(dir, d.Name())
@@ -351,7 +348,6 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dir string) 
 			}
 		}
 	}
-
 	return dirnode, nil
 }
 
@@ -376,6 +372,7 @@ func doAddPin(ctx context.Context, bstore blockstore.Blockstore, client *core.Es
 		return xerrors.Errorf("failed to pin %s to estuary: %w", root, err)
 	}
 
+	fmt.Println("Delegates: ", st.Delegates)
 	if err := connectToDelegates(ctx, h, st.Delegates); err != nil {
 		fmt.Println("failed to connect to pin delegates: ", err)
 	}
@@ -809,7 +806,7 @@ func filestoreAdd(fstore *filestore.Filestore, fpath string, progcb func(int64))
 	if err != nil {
 		return cid.Undef, 0, err
 	}
-
+	fmt.Printf("imported file: %s | %s \n", fpath, nd.Cid())
 	return nd.Cid(), size, nil
 }
 

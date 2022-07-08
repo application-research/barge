@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/application-research/estuary/dbmgr"
 	"github.com/spf13/viper"
 	"io"
 	"mime/multipart"
@@ -26,12 +27,10 @@ import (
 )
 
 type EstClient struct {
-	Host    string
-	Shuttle string
-	Tok     string
-
+	Host       string
+	Shuttle    string
+	Tok        string
 	DoProgress bool
-
 	LogTimings bool
 }
 
@@ -278,20 +277,8 @@ func (c *EstClient) AddFile(fpath, filename string) (*util.ContentAddResponse, e
 	return &rbody, nil
 }
 
-// TODO: copied from main estuary codebase, should dedupe and use the same struct
-type Collection struct {
-	ID        uint      `json:"-"`
-	CreatedAt time.Time `json:"createdAt"`
-
-	UUID string `json:"uuid"`
-
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	UserID      uint   `json:"userId"`
-}
-
-func (c *EstClient) CollectionsList(ctx context.Context) ([]*Collection, error) {
-	var out []*Collection
+func (c *EstClient) CollectionsList(ctx context.Context) ([]*dbmgr.Collection, error) {
+	var out []*dbmgr.Collection
 	_, err := c.doRequest(ctx, "GET", "/collections/list", nil, &out)
 	if err != nil {
 		return nil, err
@@ -300,13 +287,13 @@ func (c *EstClient) CollectionsList(ctx context.Context) ([]*Collection, error) 
 	return out, nil
 }
 
-func (c *EstClient) CollectionsCreate(ctx context.Context, name, desc string) (*Collection, error) {
+func (c *EstClient) CollectionsCreate(ctx context.Context, name, desc string) (*dbmgr.Collection, error) {
 	body := map[string]string{
 		"name":        name,
 		"description": desc,
 	}
 
-	var out Collection
+	var out dbmgr.Collection
 	_, err := c.doRequest(ctx, "POST", "/collections/create", body, &out)
 	if err != nil {
 		return nil, err
@@ -349,6 +336,8 @@ func (c *EstClient) PinAdd(ctx context.Context, root cid.Cid, name string, origi
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(resp)
 
 	return &resp, nil
 }

@@ -48,10 +48,14 @@ ldflags=-X=main.appVersion=$(VERSION)
 ifneq ($(strip $(LDFLAGS)),)
 	ldflags+=-extldflags=$(LDFLAGS)
 endif
+
 GOFLAGS+=-ldflags="$(ldflags)"
 
 .PHONY: all
 all: build
+
+.PHONY: debug
+debug: debug-build
 
 .PHONY: deps
 deps: $(BUILD_DEPS)
@@ -59,7 +63,15 @@ deps: $(BUILD_DEPS)
 .PHONY: build
 build: deps barge
 
+.PHONY: debug-build
+debug-build: deps debug-barg
+
 .PHONY: barge
 barge:
 	go build $(GOFLAGS) -o barge .
+BINS+=barge
+
+.PHONY: debug-barg
+debug-barg:
+	go build -ldflags="all=-w" -o barge .
 BINS+=barge
