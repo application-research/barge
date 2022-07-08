@@ -1,9 +1,11 @@
 package core
 
 import (
+	"github.com/application-research/estuary/pinner/types"
 	"github.com/ipfs/go-bitswap"
 	"github.com/libp2p/go-libp2p-core/host"
 	metrics "github.com/libp2p/go-libp2p-core/metrics"
+	"time"
 )
 
 type EstuaryConfig struct {
@@ -28,4 +30,31 @@ type PinClient struct {
 	host    host.Host
 	bitswap *bitswap.Bitswap
 	bwc     metrics.Reporter
+}
+
+type FileWithPin struct {
+	FileID uint
+	PinID  uint
+
+	Cid       string
+	Path      string
+	Status    types.PinningStatus
+	RequestID string
+}
+
+type File struct {
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	Path      string `gorm:"index"`
+	Cid       string
+	Mtime     time.Time
+}
+
+type Pin struct {
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	File      uint `gorm:"index"`
+	Cid       string
+	RequestID string `gorm:"index"`
+	Status    types.PinningStatus
 }

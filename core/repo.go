@@ -2,11 +2,6 @@ package core
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"time"
-
-	"github.com/application-research/estuary/pinner/types"
 	flatfs "github.com/ipfs/go-ds-flatfs"
 	leveldb "github.com/ipfs/go-ds-leveldb"
 	"github.com/ipfs/go-filestore"
@@ -16,6 +11,8 @@ import (
 	cli "github.com/urfave/cli/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"os"
+	"path/filepath"
 )
 
 type Repo struct {
@@ -35,23 +32,6 @@ func (r *Repo) Close() error {
 	}
 
 	return nil
-}
-
-type File struct {
-	ID        uint `gorm:"primarykey"`
-	CreatedAt time.Time
-	Path      string `gorm:"index"`
-	Cid       string
-	Mtime     time.Time
-}
-
-type Pin struct {
-	ID        uint `gorm:"primarykey"`
-	CreatedAt time.Time
-	File      uint `gorm:"index"`
-	Cid       string
-	RequestID string `gorm:"index"`
-	Status    types.PinningStatus
 }
 
 func findRepo(cctx *cli.Context) (string, error) {
