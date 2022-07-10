@@ -60,7 +60,7 @@ holds the estuary connection information.
 ./barge plumb put-file <file path>
 ```
 
-## Upload a CAR file
+### Upload a CAR file
 ```
 ./barge plumb put-car <CAR file path>
 ```
