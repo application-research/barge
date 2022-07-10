@@ -81,7 +81,7 @@ require (
 )
 
 require (
-	github.com/application-research/estuary v0.1.2
+	github.com/application-research/estuary v0.1.3
 	github.com/labstack/gommon v0.3.1
 	golang.org/x/exp v0.0.0-20210715201039-d37aa40e8013
 )
