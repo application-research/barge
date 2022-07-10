@@ -80,7 +80,11 @@ require (
 	gorm.io/gorm v1.21.15
 )
 
-require github.com/application-research/estuary v0.1.2
+require (
+	github.com/application-research/estuary v0.1.2
+	github.com/labstack/gommon v0.3.1
+	golang.org/x/exp v0.0.0-20210715201039-d37aa40e8013
+)
 
 require (
 	github.com/BurntSushi/toml v0.4.1 // indirect
@@ -93,7 +97,7 @@ require (
 	github.com/akavel/rsrc v0.8.0 // indirect
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
 	github.com/alexbrainman/goissue34681 v0.0.0-20191006012335-3fc7a47baff5 // indirect
-	github.com/application-research/filclient v0.0.0-20220602175911-a6b8faf9f1cd // indirect
+	github.com/application-research/filclient v0.0.0-20220622165741-3ca6a3f3bc7a // indirect
 	github.com/benbjohnson/clock v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bep/debounce v1.2.0 // indirect
@@ -217,7 +221,6 @@ require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/koron/go-ssdp v0.0.2 // indirect
-	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/ledgerwatch/lmdb-go v1.18.2 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
@@ -335,7 +338,6 @@ require (
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.19.1 // indirect
 	go4.org v0.0.0-20200411211856-f5505b9728dd // indirect
-	golang.org/x/exp v0.0.0-20210715201039-d37aa40e8013 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.7 // indirect
@@ -356,5 +358,8 @@ require (
 	modernc.org/xc v1.0.0 // indirect
 )
 
+replace github.com/application-research/estuary => ../estuary
+
 replace github.com/raulk/go-bs-tests => github.com/whyrusleeping/go-bs-tests v0.1.0
+
 replace github.com/filecoin-project/filecoin-ffi => ./extern/filecoin-ffi

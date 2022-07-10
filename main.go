@@ -6,6 +6,8 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli/v2"
+	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -25,6 +27,7 @@ func main() {
 		core.BargeSyncCmd,
 		core.BargeCheckCmd,
 		core.BargeShareCmd,
+		UiWebCmd,
 	}
 	app.Flags = []cli.Flag{
 		&cli.BoolFlag{
@@ -43,6 +46,21 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+var UiWebCmd = &cli.Command{
+	Name: "web-ui",
+	Action: func(context *cli.Context) error {
+		fs := http.FileServer(http.Dir("./web"))
+		http.Handle("/", fs)
+
+		log.Print("Listening on :3000...")
+		err := http.ListenAndServe(":3000", nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return err
+	},
 }
 
 func loadConfig() error {

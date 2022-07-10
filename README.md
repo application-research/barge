@@ -49,7 +49,7 @@ holds the estuary connection information.
   "estuary": {
     "host": "https://api.estuary.tech",
     "primaryshuttle": "https://shuttle-4.estuary.tech",
-    "token": "<local API token>"
+    "token": "<Estuary API token>"
   }
 }
 ```
