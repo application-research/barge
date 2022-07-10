@@ -53,3 +53,14 @@ holds the estuary connection information.
   }
 }
 ```
+
+## Usage
+### Upload a file
+```
+./barge plumb put-file <file path>
+```
+
+## Upload a CAR file
+```
+./barge plumb put-car <CAR file path>
+```
