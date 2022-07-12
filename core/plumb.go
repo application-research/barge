@@ -64,6 +64,10 @@ var PlumbPutFileCmd = &cli.Command{
 			Name:  "name",
 			Usage: "specify alternate name for file to be added with",
 		},
+		&cli.StringFlag{
+			Name:  "password",
+			Usage: "specify password to encrypt the file with a password",
+		},
 	},
 	Action: func(cctx *cli.Context) error {
 		if !cctx.Args().Present() {
@@ -361,7 +365,18 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dir string) 
 	}
 
 	progCb := func(int64) {}
+
+	prefix, err := merkledag.PrefixForCidVersion(1)
+	if err != nil {
+		return nil, err
+	}
+	prefix.MhType = mh.SHA2_256
 	dirnode := unixfs.EmptyDirNode()
+	dirnode.SetCidBuilder(cidutil.InlineBuilder{
+		Builder: prefix,
+		Limit:   32,
+	})
+
 	for _, d := range dirents {
 		name := filepath.Join(dir, d.Name())
 		if d.IsDir() {
