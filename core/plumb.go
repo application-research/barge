@@ -10,6 +10,7 @@ import (
 	metri "github.com/ipfs/go-metrics-interface"
 	"github.com/ipfs/go-unixfs/importer/balanced"
 	ihelper "github.com/ipfs/go-unixfs/importer/helpers"
+	unixfsio "github.com/ipfs/go-unixfs/io"
 	"github.com/libp2p/go-libp2p"
 	connmgr "github.com/libp2p/go-libp2p-connmgr"
 	"github.com/libp2p/go-libp2p-core/metrics"
@@ -33,7 +34,6 @@ import (
 	format "github.com/ipfs/go-ipld-format"
 	ipld "github.com/ipfs/go-ipld-format"
 	"github.com/ipfs/go-merkledag"
-	unixfsio "github.com/ipfs/go-unixfs/io"
 	"github.com/libp2p/go-libp2p-core/host"
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
@@ -113,14 +113,7 @@ var PlumbPutDirCmd = &cli.Command{
 		dserv := merkledag.NewDAGService(blockservice.New(fstore, nil))
 		fname := cctx.Args().First()
 
-		dirNode := unixfsio.NewDirectory(dserv)
-		prefix, err := merkledag.PrefixForCidVersion(1)
-		prefix.MhType = mh.SHA2_256
-		dirNode.SetCidBuilder(cidutil.InlineBuilder{
-			Builder: prefix,
-		})
-
-		dnd, err := addDirectory(ctx, fstore, dirNode, fname)
+		dnd, err := addDirectory(ctx, fstore, dserv, fname)
 
 		if err != nil {
 			return err
@@ -366,7 +359,16 @@ func setupBitswap(ctx context.Context, bstore blockstore.Blockstore) (*PinClient
 	}, nil
 }
 
-func addDirectory(ctx context.Context, fstore *filestore.Filestore, dirIo unixfsio.Directory, dir string) (*merkledag.ProtoNode, error) {
+func addDirectory(ctx context.Context, fstore *filestore.Filestore, dserv ipld.DAGService, dir string) (*merkledag.ProtoNode, error) {
+
+	//	create the root directory
+	dirNode := unixfsio.NewDirectory(dserv)
+	prefix, err := merkledag.PrefixForCidVersion(1)
+	prefix.MhType = mh.SHA2_256
+	dirNode.SetCidBuilder(cidutil.InlineBuilder{
+		Builder: prefix,
+	})
+
 	dirents, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -377,16 +379,15 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dirIo unixfs
 	for _, d := range dirents {
 		name := filepath.Join(dir, d.Name())
 		if d.IsDir() {
-			dirn, err := addDirectory(ctx, fstore, dirIo, name)
+
+			dirn, err := addDirectory(ctx, fstore, dserv, name)
 			if err != nil {
 				return nil, err
 			}
-			if err := dirIo.AddChild(ctx, name, dirn); err != nil {
+			if err := dirNode.AddChild(ctx, name, dirn); err != nil {
 				return nil, err
 			}
-			//if err := dirnode.AddNodeLink(d.Name(), dirn); err != nil {
-			//	return nil, err
-			//}
+
 			fmt.Printf("imported directory: %s | %s \n", d.Name(), dirn.Cid())
 		} else {
 			node, _, err := filestoreAdd(fstore, name, progCb)
@@ -394,19 +395,12 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dirIo unixfs
 				return nil, err
 			}
 
-			if err := dirIo.AddChild(ctx, name, node); err != nil {
+			if err := dirNode.AddChild(ctx, name, node); err != nil {
 				return nil, err
 			}
-
-			//if err := dirnode.AddRawLink(d.Name(), &format.Link{
-			//	Size: size,
-			//	Cid:  fcid,
-			//}); err != nil {
-			//	return nil, err
-			//}
 		}
 	}
-	node, err := dirIo.GetNode()
+	node, err := dirNode.GetNode()
 	stats, err := node.Stat()
 
 	fmt.Println("links", stats.NumLinks)
@@ -498,7 +492,7 @@ func importFile(dserv ipld.DAGService, fi io.Reader) (ipld.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("imported file ----: ", nd.Cid())
+	//fmt.Println("imported file ----: ", nd.Cid())
 
 	return nd, err
 }
