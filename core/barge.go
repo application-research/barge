@@ -199,7 +199,7 @@ var BargeAddCmd = &cli.Command{
 			go func() {
 				defer wg.Done()
 				for aj := range toadd {
-					fcid, _, err := filestoreAdd(r.Filestore, aj.Path, progcb)
+					nd, _, err := filestoreAdd(r.Filestore, aj.Path, progcb)
 					if err != nil {
 						fmt.Println(err)
 						return
@@ -208,7 +208,7 @@ var BargeAddCmd = &cli.Command{
 					toupdate <- updateJob{
 						Path:  aj.Path,
 						Found: aj.Found,
-						Cid:   fcid,
+						Cid:   nd.Cid(),
 						Stat:  aj.Stat,
 					}
 				}

@@ -33,7 +33,7 @@ import (
 	format "github.com/ipfs/go-ipld-format"
 	ipld "github.com/ipfs/go-ipld-format"
 	"github.com/ipfs/go-merkledag"
-	"github.com/ipfs/go-unixfs"
+	unixfsio "github.com/ipfs/go-unixfs/io"
 	"github.com/libp2p/go-libp2p-core/host"
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
@@ -110,9 +110,17 @@ var PlumbPutDirCmd = &cli.Command{
 
 		fsm.AllowFiles = true
 		fstore := filestore.NewFilestore(bs, fsm)
-
+		dserv := merkledag.NewDAGService(blockservice.New(fstore, nil))
 		fname := cctx.Args().First()
-		dnd, err := addDirectory(ctx, fstore, fname)
+
+		dirNode := unixfsio.NewDirectory(dserv)
+		prefix, err := merkledag.PrefixForCidVersion(1)
+		prefix.MhType = mh.SHA2_256
+		dirNode.SetCidBuilder(cidutil.InlineBuilder{
+			Builder: prefix,
+		})
+
+		dnd, err := addDirectory(ctx, fstore, dirNode, fname)
 
 		if err != nil {
 			return err
@@ -189,17 +197,17 @@ var PlumbSplitAddFileCmd = &cli.Command{
 		fname := cctx.Args().First()
 
 		progcb := func(int64) {}
-		fcid, _, err := filestoreAdd(fstore, fname, progcb)
+		nd, _, err := filestoreAdd(fstore, fname, progcb)
 		if err != nil {
 			return err
 		}
 
-		fmt.Println("imported file: ", fcid)
+		fmt.Println("imported file: ", nd.Cid())
 
 		dserv := merkledag.NewDAGService(blockservice.New(fstore, nil))
 		builder := dagsplit.NewBuilder(dserv, cctx.Uint64("chunk"), 0)
 
-		if err := builder.Pack(ctx, fcid); err != nil {
+		if err := builder.Pack(ctx, nd.Cid()); err != nil {
 			return err
 		}
 
@@ -317,7 +325,7 @@ var PlumbSplitAddFileCmd = &cli.Command{
 			}
 		}
 
-		fmt.Println("finished pinning: ", fcid)
+		fmt.Println("finished pinning: ", nd.Cid())
 
 		return nil
 	},
@@ -358,7 +366,7 @@ func setupBitswap(ctx context.Context, bstore blockstore.Blockstore) (*PinClient
 	}, nil
 }
 
-func addDirectory(ctx context.Context, fstore *filestore.Filestore, dir string) (*merkledag.ProtoNode, error) {
+func addDirectory(ctx context.Context, fstore *filestore.Filestore, dirIo unixfsio.Directory, dir string) (*merkledag.ProtoNode, error) {
 	dirents, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -366,43 +374,43 @@ func addDirectory(ctx context.Context, fstore *filestore.Filestore, dir string) 
 
 	progCb := func(int64) {}
 
-	prefix, err := merkledag.PrefixForCidVersion(1)
-	if err != nil {
-		return nil, err
-	}
-	prefix.MhType = mh.SHA2_256
-	dirnode := unixfs.EmptyDirNode()
-	dirnode.SetCidBuilder(cidutil.InlineBuilder{
-		Builder: prefix,
-		Limit:   32,
-	})
-
 	for _, d := range dirents {
 		name := filepath.Join(dir, d.Name())
 		if d.IsDir() {
-			dirn, err := addDirectory(ctx, fstore, name)
+			dirn, err := addDirectory(ctx, fstore, dirIo, name)
 			if err != nil {
 				return nil, err
 			}
-			if err := dirnode.AddNodeLink(d.Name(), dirn); err != nil {
+			if err := dirIo.AddChild(ctx, name, dirn); err != nil {
 				return nil, err
 			}
+			//if err := dirnode.AddNodeLink(d.Name(), dirn); err != nil {
+			//	return nil, err
+			//}
 			fmt.Printf("imported directory: %s | %s \n", d.Name(), dirn.Cid())
 		} else {
-			fcid, size, err := filestoreAdd(fstore, name, progCb)
+			node, _, err := filestoreAdd(fstore, name, progCb)
 			if err != nil {
 				return nil, err
 			}
 
-			if err := dirnode.AddRawLink(d.Name(), &format.Link{
-				Size: size,
-				Cid:  fcid,
-			}); err != nil {
+			if err := dirIo.AddChild(ctx, name, node); err != nil {
 				return nil, err
 			}
+
+			//if err := dirnode.AddRawLink(d.Name(), &format.Link{
+			//	Size: size,
+			//	Cid:  fcid,
+			//}); err != nil {
+			//	return nil, err
+			//}
 		}
 	}
-	return dirnode, nil
+	node, err := dirIo.GetNode()
+	stats, err := node.Stat()
+
+	fmt.Println("links", stats.NumLinks)
+	return node.(*merkledag.ProtoNode), nil
 }
 
 type FilestoreFile struct {
@@ -461,6 +469,7 @@ func newFF(fpath string, cb func(int64)) (*FilestoreFile, error) {
 
 func importFile(dserv ipld.DAGService, fi io.Reader) (ipld.Node, error) {
 	prefix, err := merkledag.PrefixForCidVersion(1)
+
 	if err != nil {
 		return nil, err
 	}
@@ -485,12 +494,18 @@ func importFile(dserv ipld.DAGService, fi io.Reader) (ipld.Node, error) {
 		return nil, err
 	}
 
-	return balanced.Layout(db)
+	nd, err := balanced.Layout(db)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("imported file ----: ", nd.Cid())
+
+	return nd, err
 }
-func filestoreAdd(fstore *filestore.Filestore, fpath string, progcb func(int64)) (cid.Cid, uint64, error) {
+func filestoreAdd(fstore *filestore.Filestore, fpath string, progcb func(int64)) (format.Node, uint64, error) {
 	ff, err := newFF(fpath, progcb)
 	if err != nil {
-		return cid.Undef, 0, err
+		return nil, 0, err
 	}
 	defer func(ff *FilestoreFile) {
 		err := ff.Close()
@@ -501,16 +516,17 @@ func filestoreAdd(fstore *filestore.Filestore, fpath string, progcb func(int64))
 
 	dserv := merkledag.NewDAGService(blockservice.New(fstore, nil))
 	nd, err := importFile(dserv, ff)
+
 	if err != nil {
-		return cid.Undef, 0, err
+		return nil, 0, err
 	}
 
 	size, err := nd.Size()
 	if err != nil {
-		return cid.Undef, 0, err
+		return nil, 0, err
 	}
 	fmt.Printf("imported file: %s | %s \n", fpath, nd.Cid())
-	return nd.Cid(), size, nil
+	return nd, size, nil
 }
 
 func connectToDelegates(ctx context.Context, h host.Host, delegates []string) error {
