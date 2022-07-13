@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"github.com/application-research/estuary/util"
 	"github.com/ipfs/go-bitswap"
 	bsnet "github.com/ipfs/go-bitswap/network"
 	"github.com/ipfs/go-cidutil"
@@ -93,6 +94,24 @@ var PlumbPutFileCmd = &cli.Command{
 		fmt.Println(resp.Cid)
 		return nil
 	},
+}
+
+func PlumbAddFile(ctx *cli.Context, fpath string, fname string) (*util.ContentAddResponse, error) {
+	c, err := LoadClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.AddFile(fpath, fname)
+}
+
+func PlumbAddCar(ctx *cli.Context, fpath string, fname string) (*util.ContentAddResponse, error) {
+	c, err := LoadClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return c.AddCar(fpath, fname)
+
 }
 
 var PlumbPutDirCmd = &cli.Command{

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>BargeUI - File upload</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<h1><div style="text-align: center;">Barge Uploader</div></h1>
+<form method="post" action="/api/v0/plumb/file" enctype="multipart/form-data">
+<div class="file-upload">
+  <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add File</button>
+  <div class="image-upload-wrap">
+    <input class="file-upload-input" name="fpath" type='file' onchange="readURL(this);" accept="image/*" />
+    <div class="drag-text">
+      <h3>Drag and drop a File</h3>
+    </div>
+  </div>
+  <div class="file-upload-content">
+    <img class="file-upload-image" src="#" alt="your image" />
+    <div class="image-title-wrap">
+      <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
+    </div>
+  </div>
+</div>
+</form>
+<!-- partial -->
+  <script  src="./script.js"></script>
+
+</body>
+</html>

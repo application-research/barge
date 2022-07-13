@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/application-research/barge/core"
+	"github.com/application-research/estuary/util"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli/v2"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -17,11 +20,11 @@ func main() {
 	app.Description = `'barge' is a cli tool to stream data to an existing Estuary node.`
 	app.Name = "barge"
 	app.Commands = []*cli.Command{
-		core.ConfigCmd,
 		core.LoginCmd,
+		core.InitCmd,
+		core.ConfigCmd,
 		core.PlumbCmd,
 		core.CollectionsCmd,
-		core.InitCmd,
 		core.BargeAddCmd,
 		core.BargeStatusCmd,
 		core.BargeSyncCmd,
@@ -53,7 +56,80 @@ var UiWebCmd = &cli.Command{
 	Action: func(context *cli.Context) error {
 		fs := http.FileServer(http.Dir("./web"))
 		http.Handle("/", fs)
+		http.HandleFunc("/api/v0/plumb/file", func(w http.ResponseWriter, r *http.Request) {
+			var contentResponse *util.ContentAddResponse
+			var jsonResponse []byte
+			var err error
+			if r.Method == "POST" { // post only
+				//	grab the local file and pass it here.
+				fmt.Println(r.FormValue("fpath"))
+				contentResponse, err = core.PlumbAddFile(context, r.FormValue("fpath"), r.Form.Get("fname"))
+				if err != nil {
+					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
 
+					jsonResponse, _ = json.Marshal(map[string]string{
+						"status": string(http.StatusBadRequest),
+						"error":  err.Error(),
+					})
+					_, err = io.WriteString(w, string(jsonResponse))
+				}
+			}
+
+			contentResponseJson, err := json.Marshal(contentResponse)
+			if err != nil {
+				log.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_, err = io.WriteString(w, string(contentResponseJson))
+			if err != nil {
+				return
+			}
+		})
+
+		http.HandleFunc("/api/v0/plumb/car", func(w http.ResponseWriter, r *http.Request) {
+			var contentResponse *util.ContentAddResponse
+			var jsonResponse []byte
+			var err error
+			if r.Method == "POST" { // post only
+				//	grab the local file and pass it here.
+				fmt.Println(r.FormValue("fpath"))
+				contentResponse, err = core.PlumbAddCar(context, r.FormValue("fpath"), r.Form.Get("fname"))
+				if err != nil {
+					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
+
+					jsonResponse, _ = json.Marshal(map[string]string{
+						"status": string(http.StatusBadRequest),
+						"error":  err.Error(),
+					})
+					_, err = io.WriteString(w, string(jsonResponse))
+				}
+			}
+
+			contentResponseJson, err := json.Marshal(contentResponse)
+			if err != nil {
+				log.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_, err = io.WriteString(w, string(contentResponseJson))
+			if err != nil {
+				return
+			}
+		})
+		})
+
+		http.HandleFunc("/api/v0/get-files", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method == "POST" {
+
+			}
+			fmt.Println("get files")
+
+		})
 		log.Print("Listening on :3000...")
 		err := http.ListenAndServe(":3000", nil)
 		if err != nil {
