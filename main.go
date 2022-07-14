@@ -52,17 +52,24 @@ func main() {
 	}
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 var UiWebCmd = &cli.Command{
-	Name: "web-ui",
+	Name: "web",
 	Action: func(context *cli.Context) error {
 
 		// create the dir first.
 		os.Mkdir("upload", 0775)
 
-		//	host
+		//	website host.
 		fs := http.FileServer(http.Dir("./web"))
+
+		//	rest endpoints.
 		http.Handle("/", fs)
 		http.HandleFunc("/api/v0/plumb/file", func(w http.ResponseWriter, r *http.Request) {
+			enableCors(&w)
 			var contentResponse *util.ContentAddResponse
 			var jsonResponse []byte
 			var err error
@@ -176,7 +183,6 @@ var UiWebCmd = &cli.Command{
 				return
 			}
 		})
-
 		http.HandleFunc("/api/v0/get-files", func(w http.ResponseWriter, r *http.Request) {
 			if r.Method == "POST" {
 

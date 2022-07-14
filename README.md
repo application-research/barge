@@ -64,3 +64,29 @@ holds the estuary connection information.
 ```
 ./barge plumb put-car <CAR file path>
 ```
+
+## WebUI
+Run Web
+```
+./barge web
+```
+
+[http://localhost:3000](http://localhost:3000)
+
+## REST API Endpoints
+Run Web and use the following endpoints to interact with the barge.
+```
+./barge web
+```
+
+### Upload file
+```
+curl --location --request POST 'http://localhost:3000/api/v0/plumb/file' \
+--form 'file=@"website.png"'
+```
+
+### Upload CAR
+```
+curl --location --request POST 'http://localhost:3000/api/v0/plumb/car' \
+--form 'file=@"file.car"'
+```
