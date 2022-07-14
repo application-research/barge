@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/urfave/cli/v2"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -54,16 +55,44 @@ func main() {
 var UiWebCmd = &cli.Command{
 	Name: "web-ui",
 	Action: func(context *cli.Context) error {
+
+		// create the dir first.
+		os.Mkdir("upload", 0775)
+
+		//	host
 		fs := http.FileServer(http.Dir("./web"))
 		http.Handle("/", fs)
 		http.HandleFunc("/api/v0/plumb/file", func(w http.ResponseWriter, r *http.Request) {
 			var contentResponse *util.ContentAddResponse
 			var jsonResponse []byte
 			var err error
+
 			if r.Method == "POST" { // post only
+
+				//	get the file
+				file, handler, err := r.FormFile("file")
+				if err != nil {
+					return
+				}
+
+				defer file.Close()
+				defer func() {
+					// remove the temp file
+					os.Remove("upload/" + handler.Filename)
+				}()
+
+				fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+				fmt.Printf("File Size: %+v\n", handler.Size)
+				fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+				// Create a temporary file within our temp-images directory that follows
+				// a particular naming pattern
+				fileBytes, err := ioutil.ReadAll(file)
+				ioutil.WriteFile("./upload/"+handler.Filename, fileBytes, 0644)
+
 				//	grab the local file and pass it here.
 				fmt.Println(r.FormValue("fpath"))
-				contentResponse, err = core.PlumbAddFile(context, r.FormValue("fpath"), r.Form.Get("fname"))
+				contentResponse, err = core.PlumbAddFile(context, "./upload/"+handler.Filename, handler.Filename)
 				if err != nil {
 					log.Println(err)
 					w.WriteHeader(http.StatusInternalServerError)
@@ -88,15 +117,41 @@ var UiWebCmd = &cli.Command{
 				return
 			}
 		})
+		http.HandleFunc("/api/v0/plumb/files", func(w http.ResponseWriter, r *http.Request) {
+			//	upload a list of files.
 
+		})
 		http.HandleFunc("/api/v0/plumb/car", func(w http.ResponseWriter, r *http.Request) {
 			var contentResponse *util.ContentAddResponse
 			var jsonResponse []byte
 			var err error
+
 			if r.Method == "POST" { // post only
+
+				//	get the file
+				file, handler, err := r.FormFile("file")
+				if err != nil {
+					return
+				}
+
+				defer file.Close()
+				defer func() {
+					// remove the temp file
+					os.Remove("upload/" + handler.Filename)
+				}()
+
+				fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+				fmt.Printf("File Size: %+v\n", handler.Size)
+				fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+				// Create a temporary file within our temp-images directory that follows
+				// a particular naming pattern
+				fileBytes, err := ioutil.ReadAll(file)
+				ioutil.WriteFile("./upload/"+handler.Filename, fileBytes, 0644)
+
 				//	grab the local file and pass it here.
 				fmt.Println(r.FormValue("fpath"))
-				contentResponse, err = core.PlumbAddCar(context, r.FormValue("fpath"), r.Form.Get("fname"))
+				contentResponse, err = core.PlumbAddCar(context, "./upload/"+handler.Filename, handler.Filename)
 				if err != nil {
 					log.Println(err)
 					w.WriteHeader(http.StatusInternalServerError)
@@ -120,7 +175,6 @@ var UiWebCmd = &cli.Command{
 			if err != nil {
 				return
 			}
-		})
 		})
 
 		http.HandleFunc("/api/v0/get-files", func(w http.ResponseWriter, r *http.Request) {
