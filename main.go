@@ -24,6 +24,7 @@ func main() {
 		core.LoginCmd,
 		core.InitCmd,
 		core.ConfigCmd,
+		core.BsGetCmd,
 		core.PlumbCmd,
 		core.CollectionsCmd,
 		core.BargeAddCmd,
@@ -57,7 +58,9 @@ func enableCors(w *http.ResponseWriter) {
 }
 
 var UiWebCmd = &cli.Command{
-	Name: "web",
+	Name:        "web",
+	Description: "barge web is a command to start the web UI",
+	Usage:       "barge web",
 	Action: func(context *cli.Context) error {
 
 		// create the dir first.

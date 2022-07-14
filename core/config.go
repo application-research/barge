@@ -10,6 +10,7 @@ import (
 var ConfigCmd = &cli.Command{
 	Name:        "config",
 	Description: `'barge config' is a command to set up the local barge configuration`,
+	Usage:       "barge config <command>",
 	Subcommands: []*cli.Command{
 		ConfigSetCmd,
 		ConfigShowCmd,

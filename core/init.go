@@ -10,8 +10,9 @@ import (
 )
 
 var InitCmd = &cli.Command{
-	Name:  "init",
-	Usage: "initialize a barge repo in the current directory",
+	Name:        "init",
+	Description: "initialize a barge repo in the current directory",
+	Usage:       "barge init",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "collection",

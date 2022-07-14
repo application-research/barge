@@ -47,9 +47,10 @@ import (
 )
 
 var PlumbCmd = &cli.Command{
-	Name:   "plumb",
-	Hidden: true,
-	Usage:  "low level plumbing commands",
+	Name:        "plumb",
+	Hidden:      true,
+	Description: "low level plumbing commands",
+	Usage:       "plumb <command> [<args>]",
 	Subcommands: []*cli.Command{
 		PlumbPutFileCmd,
 		PlumbPutCarCmd,
@@ -59,7 +60,8 @@ var PlumbCmd = &cli.Command{
 }
 
 var PlumbPutFileCmd = &cli.Command{
-	Name: "put-file",
+	Name:  "put-file",
+	Usage: "put-file <file> [<name>]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "name",

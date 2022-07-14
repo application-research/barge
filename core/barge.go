@@ -22,6 +22,7 @@ import (
 var BargeAddCmd = &cli.Command{
 	Name:        "add",
 	Description: `'barge add <file>' is a command to add a file'`,
+	Usage:       "barge add <file>",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name: "progress",
@@ -273,6 +274,7 @@ var BargeAddCmd = &cli.Command{
 var BargeStatusCmd = &cli.Command{
 	Name:        "status",
 	Description: `'barge status' is a command to check the status of the file'`,
+	Usage:       "barge status",
 	Action: func(cctx *cli.Context) error {
 		r, err := OpenRepo()
 		if err != nil {
@@ -330,6 +332,7 @@ var BargeStatusCmd = &cli.Command{
 var BargeSyncCmd = &cli.Command{
 	Name:        "sync",
 	Description: `'barge sync' is a command to synchronize the state of the objects in this barge instance'`,
+	Usage:       "barge sync",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name: "recover",
@@ -656,6 +659,7 @@ var BargeSyncCmd = &cli.Command{
 var BargeCheckCmd = &cli.Command{
 	Name:        "check",
 	Description: `'barge check' to check the state of the object'`,
+	Usage:       "barge check <cid>",
 	Action: func(cctx *cli.Context) error {
 		r, err := OpenRepo()
 		if err != nil {
@@ -686,6 +690,7 @@ var BargeCheckCmd = &cli.Command{
 var BargeShareCmd = &cli.Command{
 	Name:        "share",
 	Description: `'barge check' to share objects'`,
+	Usage:       "barge share <cid>",
 	Action: func(cctx *cli.Context) error {
 		r, err := OpenRepo()
 		if err != nil {
