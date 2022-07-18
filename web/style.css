@@ -1,0 +1,23 @@
+.image-preview-wrapper {
+  display: block;
+  max-width: 310px;
+  max-height: 310px;
+  width: 100%;
+  border: 2px solid #cccccc;
+  margin: 0 auto;
+  position: relative;
+  cursor: pointer;
+}
+
+.spinner-wrapper {
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.opacity-1 {
+  opacity: 1;
+}

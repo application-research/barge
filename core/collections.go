@@ -8,7 +8,9 @@ import (
 )
 
 var CollectionsCmd = &cli.Command{
-	Name: "collections",
+	Name:        "collections",
+	Description: `'barge collections' is a command to list all collections`,
+	Usage:       "barge collections",
 	Subcommands: []*cli.Command{
 		CollectionsCreateCmd,
 		CollectionsLsDirCmd,

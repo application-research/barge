@@ -8,7 +8,9 @@ import (
 )
 
 var LoginCmd = &cli.Command{
-	Name: "login",
+	Name:        "login",
+	Description: "Login to the Estuary node",
+	Usage:       "barge login <api key>",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "host",
