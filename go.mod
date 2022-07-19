@@ -81,7 +81,7 @@ require (
 )
 
 require (
-	github.com/application-research/estuary v0.1.3
+	github.com/application-research/estuary v0.1.4
 	github.com/labstack/gommon v0.3.1
 	golang.org/x/exp v0.0.0-20210715201039-d37aa40e8013
 )
@@ -357,8 +357,6 @@ require (
 	modernc.org/strutil v1.1.0 // indirect
 	modernc.org/xc v1.0.0 // indirect
 )
-
-replace github.com/application-research/estuary => ../estuary
 
 replace github.com/raulk/go-bs-tests => github.com/whyrusleeping/go-bs-tests v0.1.0
 
