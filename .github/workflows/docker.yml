@@ -41,4 +41,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_ORG }}/estuary:latest , ${{ secrets.DOCKERHUB_ORG }}/estuary:${{ steps.get_version.outputs.VERSION }}
+          tags: ${{ secrets.DOCKERHUB_ORG }}/barge:latest , ${{ secrets.DOCKERHUB_ORG }}/barge:${{ steps.get_version.outputs.VERSION }}

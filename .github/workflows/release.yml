@@ -30,7 +30,7 @@ jobs:
           submodules: true
       - name: Build binary for ${{ matrix.version }}
         run: |
-          docker run --rm -v "$PWD":/usr/est/build -w /usr/est/build --platform=${{ matrix.version }} ${{ secrets.DOCKERHUB_ORG }}/estuary-base:latest /bin/sh -c "make"
+          docker run --rm -v "$PWD":/usr/est/build -w /usr/est/build --platform=${{ matrix.version }} ${{ secrets.DOCKERHUB_ORG }}/barge:latest /bin/sh -c "make all"
       - name: Prepare build artifact for stashing
         run: |
           mkdir release
@@ -65,7 +65,7 @@ jobs:
 
       - name: Build binary for ${{ matrix.version }}
         run: |
-          docker run --rm -v "$PWD":/usr/est/build -w /usr/est/build --platform=${{ matrix.version }} ${{ secrets.DOCKERHUB_ORG }}/estuary-base:linux-arm64 /bin/sh -c "cp /build/* extern/filecoin-ffi/ && touch extern/filecoin-ffi/.install-filcrypto && make"
+          docker run --rm -v "$PWD":/usr/est/build -w /usr/est/build --platform=${{ matrix.version }} ${{ secrets.DOCKERHUB_ORG }}/barge:linux-arm64 /bin/sh -c "cp /build/* extern/filecoin-ffi/ && touch extern/filecoin-ffi/.install-filcrypto && make all"
 
       - name: Prepare build artifact for stashing
         run: |
@@ -176,7 +176,7 @@ jobs:
       - name: Retrieve stashed intermediary build artifact
         uses: actions/download-artifact@v1
         with:
-          name: estuary-${{ matrix.OS }}-${{ matrix.ARCH }}-${{ github.sha }}
+          name: barge-${{ matrix.OS }}-${{ matrix.ARCH }}-${{ github.sha }}
       # rename the retrieved intermediary artifact and prepare zip file
       - name: Prepare release artifact
         env:
@@ -203,7 +203,7 @@ jobs:
           VERSION: ${{ steps.get_version.outputs.VERSION }}
         run: |
           echo ::set-output name=ARTIFACT_PATH::./barge-$VERSION-${{ matrix.OS }}-${{ matrix.ARCH }}.tar.gz
-          echo ::set-output name=ARTIFACT_NAME::estuary-$VERSION-${{ matrix.OS }}-${{ matrix.ARCH }}.tar.gz
+          echo ::set-output name=ARTIFACT_NAME::barge-$VERSION-${{ matrix.OS }}-${{ matrix.ARCH }}.tar.gz
           echo ::set-output name=ARTIFACT_PATH_SHA::./barge-$VERSION-${{ matrix.OS }}-${{ matrix.ARCH }}.tar.gz.sha256
           echo ::set-output name=ARTIFACT_NAME_SHA::barge-$VERSION-${{ matrix.OS }}-${{ matrix.ARCH }}.tar.gz.sha256
       # Finally upload the artifact to the corresponding release
