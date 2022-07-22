@@ -8,7 +8,7 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --help
 RUN git clone https://github.com/application-research/barge . && \
-     make all
+     make
 RUN cp ./barge /usr/local/bin
 
 FROM golang:1.16.11-stretch
