@@ -75,3 +75,9 @@ BINS+=barge
 debug-barg:
 	go build -ldflags="all=-w" -o barge .
 BINS+=barge
+
+
+.PHONY: tests
+tests:
+	cd test
+	go test -v $(GOFLAGS) ./...

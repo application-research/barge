@@ -72,10 +72,12 @@ var _ = Describe("Plumb Tests", Ordered, func() {
 		Expect(allSubCommandsThere).To(BeTrue())
 	})
 
+	//	cmd
 	It("check plumb put-file", func() {
 		Expect(plumbCmd.Subcommands[0].Name).To(Equal("put-file"))
 		err := app.Run([]string{"barge", "plumb", "put-file", "files/put-file.text"})
 		fmt.Println(err)
+		Expect(err).To(Succeed())
 	})
 
 	It("check plumb put-dir", func() {
@@ -95,4 +97,5 @@ var _ = Describe("Plumb Tests", Ordered, func() {
 		err := app.Run([]string{"barge", "plumb", "put-dir", "files/put-dir"})
 		fmt.Println(err)
 	})
+
 })
