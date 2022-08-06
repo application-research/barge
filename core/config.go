@@ -3,8 +3,11 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli/v2"
+	"os"
+	"path/filepath"
 )
 
 var ConfigCmd = &cli.Command{
@@ -49,4 +52,29 @@ var ConfigShowCmd = &cli.Command{
 		fmt.Println(string(b))
 		return nil
 	},
+}
+
+func LoadConfig() error {
+	bargeDir, err := homedir.Expand("~/.barge")
+	if err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(bargeDir, 0775); err != nil {
+		return err
+	}
+
+	viper.SetConfigName("config")
+	viper.SetConfigType("json")
+	viper.AddConfigPath("$HOME/.barge")
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return viper.WriteConfigAs(filepath.Join(bargeDir, "config"))
+		} else {
+			fmt.Printf("read err: %#v\n", err)
+			return err
+		}
+	}
+	return nil
 }
