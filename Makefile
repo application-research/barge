@@ -76,8 +76,7 @@ debug-barg:
 	go build -ldflags="all=-w" -o barge .
 BINS+=barge
 
-
 .PHONY: tests
 tests:
-	cd test
-	go test -v $(GOFLAGS) ./...
+	go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+	cd test && ginkgo -r --json-report=report.json
