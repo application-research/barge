@@ -5,47 +5,16 @@ import (
 	"github.com/application-research/barge/core"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/urfave/cli/v2"
 )
 
 var _ = Describe("Plumb Tests", Ordered, func() {
 
-	//	init
 	plumbCmd := core.PlumbCmd
-	app := cli.NewApp()
-
-	BeforeAll(func() {
-		fmt.Println("BeforeAll")
-		app.Description = `'barge' is a cli tool to stream data to an existing Estuary node.`
-		app.Name = "barge"
-		app.Commands = []*cli.Command{
-			core.InitCmd,
-			plumbCmd,
-		}
-
-		app.Flags = []cli.Flag{
-			&cli.BoolFlag{
-				Name:  "debug",
-				Usage: "enable debug logging",
-			},
-		}
-		app.Before = func(cctx *cli.Context) error {
-			if err := core.LoadConfig(); err != nil {
-				return err
-			}
-			return nil
-		}
-		Expect(app.Run([]string{"barge", "help"})).To(Succeed())
-	})
-
-	It("init", func() {
-		Expect(app.Run([]string{"barge", "init"})).To(Succeed())
-	})
 
 	//	basic config check
 	It("check plumb name", func() {
-		fmt.Println(plumbCmd)
 		Expect(plumbCmd.Name).To(Equal("plumb"))
+		app.Commands = append(app.Commands, plumbCmd)
 	})
 
 	It("check plumb description", func() {
@@ -75,27 +44,27 @@ var _ = Describe("Plumb Tests", Ordered, func() {
 	//	cmd
 	It("check plumb put-file", func() {
 		Expect(plumbCmd.Subcommands[0].Name).To(Equal("put-file"))
-		err := app.Run([]string{"barge", "plumb", "put-file", "files/put-file.text"})
+		err := app.Run([]string{"barge", "plumb", "put-file", "./files/put-file.text"})
 		fmt.Println(err)
 		Expect(err).To(Succeed())
 	})
 
-	It("check plumb put-dir", func() {
-		Expect(plumbCmd.Subcommands[1].Name).To(Equal("put-car"))
-		err := app.Run([]string{"barge", "plumb", "put-car", "files/put-car.car"})
-		fmt.Println(err)
-	})
-
 	It("check plumb put-car", func() {
-		Expect(plumbCmd.Subcommands[2].Name).To(Equal("split-add"))
-		err := app.Run([]string{"barge", "plumb", "split-add", "files/split-add.text"})
+		Expect(plumbCmd.Subcommands[1].Name).To(Equal("put-car"))
+		err := app.Run([]string{"barge", "plumb", "put-car", "./files/put-car.car"})
 		fmt.Println(err)
 	})
 
-	It("check plumb split-add", func() {
-		Expect(plumbCmd.Subcommands[3].Name).To(Equal("put-dir"))
-		err := app.Run([]string{"barge", "plumb", "put-dir", "files/put-dir"})
-		fmt.Println(err)
-	})
+	//It("check plumb split-add", func() {
+	//	Expect(plumbCmd.Subcommands[2].Name).To(Equal("split-add"))
+	//	err := app.Run([]string{"barge", "plumb", "split-add", "./files/split-add.text"})
+	//	fmt.Println(err)
+	//})
+
+	//It("check plumb put-dir", func() {
+	//	Expect(plumbCmd.Subcommands[3].Name).To(Equal("put-dir"))
+	//	err := app.Run([]string{"barge", "plumb", "put-dir", "./files/put-dir"})
+	//	fmt.Println(err)
+	//})
 
 })
