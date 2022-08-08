@@ -1,4 +1,4 @@
-package test_test
+package tests_test
 
 import (
 	"fmt"
@@ -63,13 +63,13 @@ var _ = Describe("Plumb Tests", Ordered, func() {
 	It("check plumb split-add", func() {
 		Expect(plumbCmd.Subcommands[2].Name).To(Equal("split-add"))
 		//err := app.Run([]string{"barge", "plumb", "split-add", "./files/split-add.text"})
-		Expect(true).To(BeTrue()) // skip this test for now
+		Expect(true).To(BeTrue()) // skip this tests for now
 	})
 
 	It("check plumb put-dir", func() {
 		Expect(plumbCmd.Subcommands[3].Name).To(Equal("put-dir"))
 		//err := app.Run([]string{"barge", "plumb", "put-dir", "./files/put-dir"})
-		Expect(true).To(BeTrue()) // skip this test for now
+		Expect(true).To(BeTrue()) // skip this tests for now
 	})
 
 })

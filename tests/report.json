@@ -1,6 +1,6 @@
 [
   {
-    "SuitePath": "/Users/alvinreyes/Projects/arg/estuary-barge/test",
+    "SuitePath": "/Users/alvinreyes/Projects/arg/estuary-barge/tests",
     "SuiteDescription": "Core Suite",
     "SuiteLabels": [],
     "SuiteSucceeded": true,
@@ -10,11 +10,11 @@
       "TotalSpecs": 12,
       "SpecsThatWillRun": 12
     },
-    "StartTime": "2022-08-07T10:38:05.323937-04:00",
-    "EndTime": "2022-08-07T10:38:06.316721-04:00",
-    "RunTime": 992762834,
+    "StartTime": "2022-08-07T15:46:53.795659-04:00",
+    "EndTime": "2022-08-07T15:46:55.947198-04:00",
+    "RunTime": 2151544125,
     "SuiteConfig": {
-      "RandomSeed": 1659883076,
+      "RandomSeed": 1659901599,
       "RandomizeAllSpecs": false,
       "FocusStrings": null,
       "SkipStrings": null,
@@ -26,7 +26,7 @@
       "FlakeAttempts": 0,
       "EmitSpecProgress": false,
       "DryRun": false,
-      "Timeout": 3592613043709,
+      "Timeout": 3586894130333,
       "OutputInterceptorMode": "",
       "ParallelProcess": 1,
       "ParallelTotal": 1,
@@ -39,26 +39,26 @@
         "ContainerHierarchyLabels": null,
         "LeafNodeType": "BeforeSuite",
         "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/core_suite_test.go",
-          "LineNumber": 23
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/core_suite_test.go",
+          "LineNumber": 25
         },
         "LeafNodeLabels": null,
         "LeafNodeText": "",
         "State": "passed",
-        "StartTime": "2022-08-07T10:38:05.323984-04:00",
-        "EndTime": "2022-08-07T10:38:05.797004-04:00",
-        "RunTime": 473009625,
+        "StartTime": "2022-08-07T15:46:53.795697-04:00",
+        "EndTime": "2022-08-07T15:46:54.994207-04:00",
+        "RunTime": 1198513584,
         "ParallelProcess": 1,
         "NumAttempts": 0
       },
       {
         "ContainerHierarchyTexts": [
-          "Plumb Tests"
+          "Login Tests"
         ],
         "ContainerHierarchyLocations": [
           {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/login_test.go",
+            "LineNumber": 9
           }
         ],
         "ContainerHierarchyLabels": [
@@ -66,258 +66,15 @@
         ],
         "LeafNodeType": "It",
         "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 15
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/login_test.go",
+          "LineNumber": 11
         },
         "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb name",
+        "LeafNodeText": "login",
         "State": "passed",
-        "StartTime": "2022-08-07T10:38:05.79718-04:00",
-        "EndTime": "2022-08-07T10:38:05.797531-04:00",
-        "RunTime": 222291,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 20
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb description",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:05.797629-04:00",
-        "EndTime": "2022-08-07T10:38:05.797649-04:00",
-        "RunTime": 19875,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 24
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb usage",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:05.797672-04:00",
-        "EndTime": "2022-08-07T10:38:05.797692-04:00",
-        "RunTime": 19958,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 28
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check number of sub commands",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:05.797735-04:00",
-        "EndTime": "2022-08-07T10:38:05.797747-04:00",
-        "RunTime": 11959,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 32
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb subcommand names",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:05.797761-04:00",
-        "EndTime": "2022-08-07T10:38:05.797772-04:00",
-        "RunTime": 10916,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 45
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb put-file",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:05.79778-04:00",
-        "EndTime": "2022-08-07T10:38:06.074598-04:00",
-        "RunTime": 276812959,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 52
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb put-car",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:06.074659-04:00",
-        "EndTime": "2022-08-07T10:38:06.183196-04:00",
-        "RunTime": 108534583,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 58
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb split-add",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:06.183304-04:00",
-        "EndTime": "2022-08-07T10:38:06.183405-04:00",
-        "RunTime": 100417,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Plumb Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-            "LineNumber": 10
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/plumb_test.go",
-          "LineNumber": 64
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "check plumb put-dir",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:06.183442-04:00",
-        "EndTime": "2022-08-07T10:38:06.183481-04:00",
-        "RunTime": 39334,
-        "ParallelProcess": 1,
-        "NumAttempts": 1
-      },
-      {
-        "ContainerHierarchyTexts": [
-          "Init Tests"
-        ],
-        "ContainerHierarchyLocations": [
-          {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/init_test.go",
-            "LineNumber": 8
-          }
-        ],
-        "ContainerHierarchyLabels": [
-          []
-        ],
-        "LeafNodeType": "It",
-        "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/init_test.go",
-          "LineNumber": 10
-        },
-        "LeafNodeLabels": [],
-        "LeafNodeText": "init",
-        "State": "passed",
-        "StartTime": "2022-08-07T10:38:06.183507-04:00",
-        "EndTime": "2022-08-07T10:38:06.18434-04:00",
-        "RunTime": 832834,
+        "StartTime": "2022-08-07T15:46:54.994278-04:00",
+        "EndTime": "2022-08-07T15:46:55.103762-04:00",
+        "RunTime": 109484542,
         "ParallelProcess": 1,
         "NumAttempts": 1
       },
@@ -327,7 +84,7 @@
         ],
         "ContainerHierarchyLocations": [
           {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/config_test.go",
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/config_test.go",
             "LineNumber": 8
           }
         ],
@@ -336,26 +93,26 @@
         ],
         "LeafNodeType": "It",
         "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/config_test.go",
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/config_test.go",
           "LineNumber": 9
         },
         "LeafNodeLabels": [],
         "LeafNodeText": "config",
         "State": "passed",
-        "StartTime": "2022-08-07T10:38:06.184371-04:00",
-        "EndTime": "2022-08-07T10:38:06.185997-04:00",
-        "RunTime": 1625792,
+        "StartTime": "2022-08-07T15:46:55.103814-04:00",
+        "EndTime": "2022-08-07T15:46:55.104389-04:00",
+        "RunTime": 575000,
         "ParallelProcess": 1,
         "NumAttempts": 1
       },
       {
         "ContainerHierarchyTexts": [
-          "Login Tests"
+          "Init Tests"
         ],
         "ContainerHierarchyLocations": [
           {
-            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/login_test.go",
-            "LineNumber": 9
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/init_test.go",
+            "LineNumber": 8
           }
         ],
         "ContainerHierarchyLabels": [
@@ -363,15 +120,258 @@
         ],
         "LeafNodeType": "It",
         "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/login_test.go",
-          "LineNumber": 11
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/init_test.go",
+          "LineNumber": 10
         },
         "LeafNodeLabels": [],
-        "LeafNodeText": "login",
+        "LeafNodeText": "init",
         "State": "passed",
-        "StartTime": "2022-08-07T10:38:06.186029-04:00",
-        "EndTime": "2022-08-07T10:38:06.292719-04:00",
-        "RunTime": 106687125,
+        "StartTime": "2022-08-07T15:46:55.104399-04:00",
+        "EndTime": "2022-08-07T15:46:55.104505-04:00",
+        "RunTime": 106042,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 15
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb name",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.104516-04:00",
+        "EndTime": "2022-08-07T15:46:55.10459-04:00",
+        "RunTime": 73541,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 20
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb description",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.104596-04:00",
+        "EndTime": "2022-08-07T15:46:55.104604-04:00",
+        "RunTime": 7291,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 24
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb usage",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.104608-04:00",
+        "EndTime": "2022-08-07T15:46:55.104614-04:00",
+        "RunTime": 6459,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 28
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check number of sub commands",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.104625-04:00",
+        "EndTime": "2022-08-07T15:46:55.104632-04:00",
+        "RunTime": 6709,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 32
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb subcommand names",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.104636-04:00",
+        "EndTime": "2022-08-07T15:46:55.104641-04:00",
+        "RunTime": 4834,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 45
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb put-file",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.104646-04:00",
+        "EndTime": "2022-08-07T15:46:55.829127-04:00",
+        "RunTime": 724482292,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 57
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb put-car",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.829238-04:00",
+        "EndTime": "2022-08-07T15:46:55.933228-04:00",
+        "RunTime": 103989750,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 63
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb split-add",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.933259-04:00",
+        "EndTime": "2022-08-07T15:46:55.933314-04:00",
+        "RunTime": 54875,
+        "ParallelProcess": 1,
+        "NumAttempts": 1
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Plumb Tests"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+            "LineNumber": 10
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/plumb_test.go",
+          "LineNumber": 69
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "check plumb put-dir",
+        "State": "passed",
+        "StartTime": "2022-08-07T15:46:55.933323-04:00",
+        "EndTime": "2022-08-07T15:46:55.933387-04:00",
+        "RunTime": 64041,
         "ParallelProcess": 1,
         "NumAttempts": 1
       },
@@ -381,15 +381,15 @@
         "ContainerHierarchyLabels": null,
         "LeafNodeType": "AfterSuite",
         "LeafNodeLocation": {
-          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/test/core_suite_test.go",
-          "LineNumber": 54
+          "FileName": "/Users/alvinreyes/Projects/arg/estuary-barge/tests/core_suite_test.go",
+          "LineNumber": 62
         },
         "LeafNodeLabels": null,
         "LeafNodeText": "",
         "State": "passed",
-        "StartTime": "2022-08-07T10:38:06.292794-04:00",
-        "EndTime": "2022-08-07T10:38:06.316492-04:00",
-        "RunTime": 23697541,
+        "StartTime": "2022-08-07T15:46:55.933399-04:00",
+        "EndTime": "2022-08-07T15:46:55.947155-04:00",
+        "RunTime": 13755709,
         "ParallelProcess": 1,
         "NumAttempts": 0
       }
