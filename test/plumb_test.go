@@ -13,8 +13,8 @@ var _ = Describe("Plumb Tests", Ordered, func() {
 
 	//	basic config check
 	It("check plumb name", func() {
-		Expect(plumbCmd.Name).To(Equal("plumb"))
 		app.Commands = append(app.Commands, plumbCmd)
+		Expect(plumbCmd.Name).To(Equal("plumb"))
 	})
 
 	It("check plumb description", func() {
@@ -44,8 +44,13 @@ var _ = Describe("Plumb Tests", Ordered, func() {
 	//	cmd
 	It("check plumb put-file", func() {
 		Expect(plumbCmd.Subcommands[0].Name).To(Equal("put-file"))
+		app.Commands = append(app.Commands, plumbCmd)
+		app.EnableBashCompletion = true
 		err := app.Run([]string{"barge", "plumb", "put-file", "./files/put-file.text"})
-		fmt.Println(err)
+		//stdout := outputBuffer.String()
+		//
+		//Expect(strings.Contains(stdout, "bafkreigwkdyhpgumss4al56hykwwssnx6mxwpouhacm76vqdnvmgrdf2cq")).To(BeTrue())
+		//Expect(err).To(BeNil())
 		Expect(err).To(Succeed())
 	})
 
