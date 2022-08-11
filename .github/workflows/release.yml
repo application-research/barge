@@ -30,7 +30,7 @@ jobs:
           submodules: true
       - name: Build binary for ${{ matrix.version }}
         run: |
-          docker run --rm -v "$PWD":/usr/est/build -w /usr/est/build --platform=${{ matrix.version }} ${{ secrets.DOCKERHUB_ORG }}/barge:latest /bin/sh -c "make all"
+          docker run --rm -v "$PWD":/usr/est/build -w /usr/est/build --platform=${{ matrix.version }} ${{ secrets.DOCKERHUB_ORG }}/barge:base /bin/sh -c "make all"
       - name: Prepare build artifact for stashing
         run: |
           mkdir release
