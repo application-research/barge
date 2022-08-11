@@ -3,4 +3,4 @@ estuary-barge
 barge
 .barge
 upload
-test/config/config.env
+tests/config/config.env

@@ -79,4 +79,4 @@ BINS+=barge
 .PHONY: tests
 tests:
 	go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
-	cd test && ginkgo -r --json-report=report.json
+	cd tests && ginkgo -r --json-report=report.json
