@@ -1,4 +1,5 @@
-FROM golang:1.16.11-stretch AS builder
+FROM golang:1.18-stretch AS builder
+USER root
 RUN apt-get update && \
     apt-get install -y wget jq hwloc ocl-icd-opencl-dev git libhwloc-dev pkg-config make && \
     apt-get install -y cargo
@@ -12,6 +13,5 @@ RUN echo ${TAG}
 RUN git clone https://github.com/application-research/barge . && \
     git pull && \
     git fetch --all --tags && \
-    git checkout ${TAG} && \
-    make
-RUN cp ./barge /usr/local/bin
+    git checkout ${TAG}
+USER 1001
