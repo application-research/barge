@@ -11,6 +11,9 @@ CLEAN:=
 BINS:=
 GOFLAGS:=
 
+.PHONY: all
+all: build
+
 ## FFI
 FFI_PATH:=extern/filecoin-ffi/
 FFI_DEPS:=.install-filcrypto
@@ -51,17 +54,14 @@ endif
 
 GOFLAGS+=-ldflags="$(ldflags)"
 
-.PHONY: all
-all: build
+.PHONY: build
+build: deps barge
 
 .PHONY: debug
 debug: debug-build
 
 .PHONY: deps
 deps: $(BUILD_DEPS)
-
-.PHONY: build
-build: deps barge
 
 .PHONY: debug-build
 debug-build: deps debug-barg
@@ -75,3 +75,13 @@ BINS+=barge
 debug-barg:
 	go build -ldflags="all=-w" -o barge .
 BINS+=barge
+
+.PHONY: tests
+tests:
+	go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+	cd tests && ginkgo -r --json-report=report.json
+
+
+.PHONY: clean
+clean:
+	rm -rf $(CLEAN) $(BINS)

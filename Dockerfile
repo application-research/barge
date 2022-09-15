@@ -1,4 +1,5 @@
-FROM golang:1.16.11-stretch AS builder
+FROM golang:1.18-stretch AS builder
+USER root
 RUN apt-get update && \
     apt-get install -y wget jq hwloc ocl-icd-opencl-dev git libhwloc-dev pkg-config make && \
     apt-get install -y cargo
@@ -7,12 +8,10 @@ WORKDIR /app/
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --help
+ARG TAG=${TAG}
+RUN echo ${TAG}
 RUN git clone https://github.com/application-research/barge . && \
-     make
-RUN cp ./barge /usr/local/bin
-
-FROM golang:1.16.11-stretch
-RUN apt-get update && \
-    apt-get install -y hwloc libhwloc-dev ocl-icd-opencl-dev
-
-COPY --from=builder /app/barge /usr/local/bin
+    git pull && \
+    git fetch --all --tags && \
+    git checkout ${TAG}
+USER 1001
