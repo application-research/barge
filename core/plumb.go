@@ -375,7 +375,7 @@ func setupBitswap(ctx context.Context, bstore blockstore.Blockstore) (*PinClient
 
 	return &PinClient{
 		host:    h,
-		bitswap: bswap.(*bitswap.Bitswap),
+		bitswap: bswap,
 		bwc:     bwc,
 	}, nil
 }
